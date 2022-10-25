@@ -1,0 +1,38 @@
+# General
+ColumnLimit: 120
+
+# Pointers and references
+PointerAlignment: Middle
+
+# Indentation
+UseTab: ForIndentation
+IndentWidth: 2
+TabWidth: 2
+AccessModifierOffset: -2
+IndentRequiresClause: false
+
+# Breaking
+BreakBeforeConceptDeclarations: false
+AlwaysBreakBeforeMultilineStrings: true
+BinPackParameters: false
+BinPackArguments: false
+ReflowComments: true
+
+# Inlining
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: None
+AllowShortLoopsOnASingleLine: false
+
+# Breaking
+BreakBeforeBraces: Attach
+AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+
+# Namespaces
+NamespaceIndentation: All
+FixNamespaceComments: true
