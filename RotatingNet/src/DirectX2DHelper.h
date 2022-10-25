@@ -3,20 +3,23 @@
 #include <d2d1_3.h>
 
 class DirectX2DHelper {
-	ID2D1Factory * d2d1Factory = nullptr;
-	ID2D1HwndRenderTarget * hwndRenderTarget = nullptr;
+	ID2D1Factory * d2d1Factory {nullptr};
+	ID2D1HwndRenderTarget * hwndRenderTarget {nullptr};
+	RECT windowSize {};
 
 public:
 	static D2D1_COLOR_F white;
-	static D2D1_COLOR_F light_blue;
+	static D2D1_COLOR_F darkBlue;
 
 	DirectX2DHelper();
 
 	explicit DirectX2DHelper(HWND hwnd);
 
-//	DirectX2DHelper & operator=(DirectX2DHelper && other) noexcept ;
+	void reloadTarget(HWND hwnd);
 
 	~DirectX2DHelper();
+
+	RECT getWindowSize();
 
 	void createSolidColorBrush(D2D1_COLOR_F color, ID2D1SolidColorBrush ** brush);
 

@@ -9,8 +9,6 @@ INT WINAPI wWinMain(_In_ [[maybe_unused]] HINSTANCE hInstance,
                     _In_ [[maybe_unused]] PWSTR pCmdLine,
                     _In_ [[maybe_unused]] INT nCmdShow) {
 
-  std::cout << "Hello world!\n";
-
   // Register the window class.
   auto CLASS_NAME = L"Sample Window Class";
 

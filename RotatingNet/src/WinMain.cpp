@@ -55,10 +55,10 @@ INT WINAPI wWinMain(
 
 	// Create the window.
 	HWND hwnd = CreateWindowEx(
-	    0,                    // Optional window styles.
-	    CLASS_NAME,           // Window class
-	    L"Rotating Net", // Window text
-	    WS_OVERLAPPEDWINDOW,  // Window style
+	    0,                   // Optional window styles.
+	    CLASS_NAME,          // Window class
+	    L"Rotating Net",     // Window text
+	    WS_OVERLAPPEDWINDOW, // Window style
 
 	    // Size and position
 	    CW_USEDEFAULT,
@@ -127,8 +127,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 		return 0;
 
 	case WM_SIZE:
-		d2DHelper.~DirectX2DHelper();
-		new (&d2DHelper) DirectX2DHelper(hwnd);
+		d2DHelper.reloadTarget(hwnd);
 		return 0;
 
 	case WM_TIMER:
@@ -136,7 +135,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 		return 0;
 
 	case WM_PAINT:
-		GetClientRect(hwnd, &windowSize);
+		windowSize = d2DHelper.getWindowSize();
 
 		angle1 = float(float((GetTickCount64() - startTickCount) % 10000) / 10000. * 2 * pi);
 		angle2 = float(float((GetTickCount64() - startTickCount) % 13500) / 13500. * 2 * pi);
@@ -144,7 +143,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 		d2DHelper.createSolidColorBrush(DirectX2DHelper::white, &brush);
 
 		d2DHelper.beginDraw();
-		d2DHelper.clear(DirectX2DHelper::light_blue);
+		d2DHelper.clear(DirectX2DHelper::darkBlue);
 
 		for (int i = 0; i <= NetResolution; i++) {
 			for (int j = 0; j <= NetResolution; j++) {
@@ -153,6 +152,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 				                              .rotate(0, angle2)
 				                              .scale(ScalingFactor)
 				                              .translate({float(windowSize.right) / 2.f, float(windowSize.bottom) / 2.f, 0.f});
+				float gradientGreen = transformedPoint.x / float(windowSize.right);
+				gradientGreen = 2.f * gradientGreen - .5f;
+				brush->SetColor(D2D1::ColorF(1., gradientGreen, .0));
 				if (i > 0) {
 					Point3 transformedOtherPoint =
 					    basePoints[i - 1][j]
