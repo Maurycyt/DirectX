@@ -108,18 +108,16 @@ INT WINAPI wWinMain(
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	float angle1, angle2;
 	RECT windowSize;
-	//	int decision;
+	int decision;
 	switch (uMsg) {
 	case WM_CLOSE:
-		// FIXME: Why does this hang?
-		/*decision = MessageBox(
+		decision = MessageBox(
 		    hwnd, L"Are you sure you want to quit?", L"Are you sure?", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON1
 		);
 
 		if (decision == IDOK) {
-		  DestroyWindow(hwnd);
-		}*/
-		DestroyWindow(hwnd);
+			DestroyWindow(hwnd);
+		}
 		return 0;
 
 	case WM_DESTROY:
@@ -184,6 +182,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 					);
 				}
 			}
+
+			ValidateRect(hwnd, nullptr);
 		}
 
 		d2DHelper.endDraw();
