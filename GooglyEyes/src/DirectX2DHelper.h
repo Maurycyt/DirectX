@@ -73,7 +73,7 @@ class DirectX2DHelper {
 
 	void initializePathGeometries();
 
-	void releaseGeometries();
+	void releasePathGeometries();
 
 public:
 	DirectX2DHelper();

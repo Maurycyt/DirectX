@@ -1,96 +1,121 @@
 #include "DirectX2DHelper.h"
 #include <cmath>
+#include <stdexcept>
 
 using namespace D2D1;
 
 void DirectX2DHelper::initializeBrushes() {
-	target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &solidBrushBlack);
-	target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SaddleBrown), &solidBrushSnout);
-	target->CreateGradientStopCollection(bodyRadialStops, nBodyRadialStops, &bodyRadialStopCollection);
-	target->CreateRadialGradientBrush(bodyRadialProperties, bodyRadialStopCollection, &bodyRadialBrush);
-	target->CreateGradientStopCollection(eyeRadialStops, nEyeRadialStops, &eyeRadialStopCollection);
-	target->CreateRadialGradientBrush(eyeRadialProperties, eyeRadialStopCollection, &eyeRadialBrush);
+	if (target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &solidBrushBlack) != S_OK ||
+	    target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SaddleBrown), &solidBrushSnout) != S_OK ||
+	    target->CreateGradientStopCollection(bodyRadialStops, nBodyRadialStops, &bodyRadialStopCollection) != S_OK ||
+	    target->CreateRadialGradientBrush(bodyRadialProperties, bodyRadialStopCollection, &bodyRadialBrush) != S_OK ||
+	    target->CreateGradientStopCollection(eyeRadialStops, nEyeRadialStops, &eyeRadialStopCollection) != S_OK ||
+	    target->CreateRadialGradientBrush(eyeRadialProperties, eyeRadialStopCollection, &eyeRadialBrush) != S_OK) {
+		throw std::runtime_error("Failed to initialize brushes.");
+	}
 }
 
 void DirectX2DHelper::releaseBrushes() {
-	solidBrushBlack->Release();
-	solidBrushSnout->Release();
-	bodyRadialBrush->Release();
-	eyeRadialBrush->Release();
+	if (solidBrushBlack)
+		solidBrushBlack->Release();
+	if (solidBrushSnout)
+		solidBrushSnout->Release();
+	if (bodyRadialStopCollection)
+		bodyRadialStopCollection->Release();
+	if (bodyRadialBrush)
+		bodyRadialBrush->Release();
+	if (eyeRadialStopCollection)
+		eyeRadialStopCollection->Release();
+	if (eyeRadialBrush)
+		eyeRadialBrush->Release();
 }
 
 void DirectX2DHelper::initializePathGeometries() {
-	factory->CreatePathGeometry(&bodyPath);
-	bodyPath->Open(&bodyPathSink);
-	bodyPathSink->BeginFigure({bodyLeft * .8f, bodyTop * .8f}, D2D1_FIGURE_BEGIN_FILLED);
-	bodyPathSink->AddBezier({{bodyLeft * .4f, bodyTop}, {bodyRight * .4f, bodyTop}, {bodyRight * .8f, bodyTop * .8f}});
-	bodyPathSink->AddBezier({{bodyRight, bodyTop}, {bodyRight * 1.2f, bodyTop * .8f}, {bodyRight, bodyTop *.5f}});
-	bodyPathSink->AddBezier({{bodyRight, bodyBottom * .5f}, {bodyRight * .5f, bodyBottom}, {0., bodyBottom}});
-	bodyPathSink->AddBezier({{bodyLeft * .5f, bodyBottom}, {bodyLeft, bodyBottom * .5f}, {bodyLeft, bodyTop * .5f}});
-	bodyPathSink->AddBezier({{bodyLeft * 1.2f, bodyTop * .8f}, {bodyLeft, bodyTop}, {bodyLeft * .8f, bodyTop *.8f}});
-	bodyPathSink->EndFigure(D2D1_FIGURE_END_OPEN);
-	bodyPathSink->Close();
-	
-	factory->CreatePathGeometry(&snoutPath);
-	snoutPath->Open(&snoutPathSink);
-	snoutPathSink->BeginFigure({0., snoutTop}, D2D1_FIGURE_BEGIN_FILLED);
-	snoutPathSink->AddBezier({{snoutRight, snoutTop}, {snoutRight, snoutTop * .25f}, {snoutRight, .0}});
-	snoutPathSink->AddBezier({{snoutRight, snoutBottom * .25f}, {snoutRight * .5f, snoutBottom}, {.0, snoutBottom}});
-	snoutPathSink->AddBezier({{snoutLeft * .5f, snoutBottom}, {snoutLeft, snoutBottom * .25f}, {snoutLeft, 0.}});
-	snoutPathSink->AddBezier({{snoutLeft, snoutTop * .25f}, {snoutLeft, snoutTop}, {0., snoutTop}});
-	snoutPathSink->EndFigure(D2D1_FIGURE_END_CLOSED);
-	snoutPathSink->Close();
-	
-	factory->CreatePathGeometry(&frownPath);
-	frownPath->Open(&frownPathSink);
-	frownPathSink->BeginFigure({mouthLeft, mouthCenter}, D2D1_FIGURE_BEGIN_HOLLOW);
-	frownPathSink->AddBezier({{mouthLeft * .5f, mouthTop}, {mouthRight * .5f, mouthTop}, {mouthRight, mouthCenter}});
-	frownPathSink->EndFigure(D2D1_FIGURE_END_OPEN);
-	frownPathSink->Close();
-	
-	factory->CreatePathGeometry(&smilePath);
-	smilePath->Open(&smilePathSink);
-	smilePathSink->BeginFigure({mouthLeft, mouthCenter}, D2D1_FIGURE_BEGIN_HOLLOW);
-	smilePathSink->AddBezier({{mouthLeft * .5f, mouthBottom}, {mouthRight * .5f, mouthBottom}, {mouthRight, mouthCenter}});
-	smilePathSink->EndFigure(D2D1_FIGURE_END_OPEN);
-	smilePathSink->Close();
+	if (factory->CreatePathGeometry(&bodyPath) != S_OK || bodyPath->Open(&bodyPathSink) != S_OK ||
+	    (bodyPathSink->BeginFigure({bodyLeft * .8f, bodyTop * .8f}, D2D1_FIGURE_BEGIN_FILLED),
+	     bodyPathSink->AddBezier({{bodyLeft * .4f, bodyTop}, {bodyRight * .4f, bodyTop}, {bodyRight * .8f, bodyTop * .8f}}
+	     ),
+	     bodyPathSink->AddBezier({{bodyRight, bodyTop}, {bodyRight * 1.2f, bodyTop * .8f}, {bodyRight, bodyTop * .5f}}),
+	     bodyPathSink->AddBezier({{bodyRight, bodyBottom * .5f}, {bodyRight * .5f, bodyBottom}, {0., bodyBottom}}),
+	     bodyPathSink->AddBezier({{bodyLeft * .5f, bodyBottom}, {bodyLeft, bodyBottom * .5f}, {bodyLeft, bodyTop * .5f}}),
+	     bodyPathSink->AddBezier({{bodyLeft * 1.2f, bodyTop * .8f}, {bodyLeft, bodyTop}, {bodyLeft * .8f, bodyTop * .8f}}
+	     ),
+	     bodyPathSink->EndFigure(D2D1_FIGURE_END_OPEN),
+	     bodyPathSink->Close()) != S_OK ||
+
+	    factory->CreatePathGeometry(&snoutPath) != S_OK || snoutPath->Open(&snoutPathSink) != S_OK ||
+	    (snoutPathSink->BeginFigure({0., snoutTop}, D2D1_FIGURE_BEGIN_FILLED),
+	     snoutPathSink->AddBezier({{snoutRight, snoutTop}, {snoutRight, snoutTop * .25f}, {snoutRight, .0}}),
+	     snoutPathSink->AddBezier({{snoutRight, snoutBottom * .25f}, {snoutRight * .5f, snoutBottom}, {.0, snoutBottom}}),
+	     snoutPathSink->AddBezier({{snoutLeft * .5f, snoutBottom}, {snoutLeft, snoutBottom * .25f}, {snoutLeft, 0.}}),
+	     snoutPathSink->AddBezier({{snoutLeft, snoutTop * .25f}, {snoutLeft, snoutTop}, {0., snoutTop}}),
+	     snoutPathSink->EndFigure(D2D1_FIGURE_END_CLOSED),
+	     snoutPathSink->Close() != S_OK) ||
+
+	    factory->CreatePathGeometry(&frownPath) != S_OK || frownPath->Open(&frownPathSink) != S_OK ||
+	    (frownPathSink->BeginFigure({mouthLeft, mouthCenter}, D2D1_FIGURE_BEGIN_HOLLOW),
+	     frownPathSink->AddBezier({{mouthLeft * .5f, mouthTop}, {mouthRight * .5f, mouthTop}, {mouthRight, mouthCenter}}),
+	     frownPathSink->EndFigure(D2D1_FIGURE_END_OPEN),
+	     frownPathSink->Close()) != S_OK ||
+
+	    factory->CreatePathGeometry(&smilePath) != S_OK || smilePath->Open(&smilePathSink) != S_OK ||
+	    (smilePathSink->BeginFigure({mouthLeft, mouthCenter}, D2D1_FIGURE_BEGIN_HOLLOW),
+	     smilePathSink->AddBezier(
+	         {{mouthLeft * .5f, mouthBottom}, {mouthRight * .5f, mouthBottom}, {mouthRight, mouthCenter}}
+	     ),
+	     smilePathSink->EndFigure(D2D1_FIGURE_END_OPEN),
+	     smilePathSink->Close()) != S_OK) {
+		throw std::runtime_error("Failed to initialize path geometries.");
+	}
 }
 
-void DirectX2DHelper::releaseGeometries() {
-	snoutPath->Release();
-	snoutPathSink->Release();
-	frownPath->Release();
-	frownPathSink->Release();
-	smilePath->Release();
-	smilePathSink->Release();
+void DirectX2DHelper::releasePathGeometries() {
+	if (bodyPathSink)
+		bodyPathSink->Release();
+	if (bodyPath)
+		bodyPath->Release();
+	if (snoutPathSink)
+		snoutPathSink->Release();
+	if (snoutPath)
+		snoutPath->Release();
+	if (frownPathSink)
+		frownPathSink->Release();
+	if (frownPath)
+		frownPath->Release();
+	if (smilePathSink)
+		smilePathSink->Release();
+	if (smilePath)
+		smilePath->Release();
 }
 
 DirectX2DHelper::DirectX2DHelper() = default;
 
 DirectX2DHelper::DirectX2DHelper(HWND hwnd) {
-	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory);
-	GetClientRect(hwnd, &windowSize);
-	factory->CreateHwndRenderTarget(
-	    RenderTargetProperties(),
-	    HwndRenderTargetProperties(hwnd, {UINT32(windowSize.right), UINT32(windowSize.bottom)}),
-	    &target
-	);
+	if (D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory) != S_OK || GetClientRect(hwnd, &windowSize) == 0 ||
+	    factory->CreateHwndRenderTarget(
+	        RenderTargetProperties(),
+	        HwndRenderTargetProperties(hwnd, {UINT32(windowSize.right), UINT32(windowSize.bottom)}),
+	        &target
+	    ) != S_OK) {
+		throw std::runtime_error("Failed to initialize DirectX2DHelper.");
+	}
 
 	initializeBrushes();
 	initializePathGeometries();
 }
 
 void DirectX2DHelper::reloadTarget(HWND hwnd) {
-	if (target) {
+	if (target)
 		target->Release();
-	}
 
-	GetClientRect(hwnd, &windowSize);
-	factory->CreateHwndRenderTarget(
-	    RenderTargetProperties(),
-	    HwndRenderTargetProperties(hwnd, {UINT32(windowSize.right), UINT32(windowSize.bottom)}),
-	    &target
-	);
+	if (factory->CreateHwndRenderTarget(
+	        RenderTargetProperties(),
+	        HwndRenderTargetProperties(hwnd, {UINT32(windowSize.right), UINT32(windowSize.bottom)}),
+	        &target
+	    ) != S_OK ||
+	    GetClientRect(hwnd, &windowSize) == 0) {
+		throw std::runtime_error("Failed to reload target.");
+	}
 
 	releaseBrushes();
 	initializeBrushes();
@@ -167,8 +192,8 @@ void DirectX2DHelper::draw(const bool smile, const D2D1_POINT_2F mousePosition) 
 
 DirectX2DHelper::~DirectX2DHelper() {
 	releaseBrushes();
-	releaseGeometries();
-	
-	factory->Release();
+	releasePathGeometries();
+
 	target->Release();
+	factory->Release();
 }
