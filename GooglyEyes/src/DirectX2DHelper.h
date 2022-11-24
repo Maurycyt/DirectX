@@ -42,7 +42,7 @@ class DirectX2DHelper {
 
 	static constexpr int nEyeRadialStops = 2;
 	D2D1_GRADIENT_STOP eyeRadialStops[nEyeRadialStops]{
-	    {.8, D2D1::ColorF(D2D1::ColorF::White)}, {1., D2D1::ColorF(D2D1::ColorF::LightGray)}};
+	    {.8f, D2D1::ColorF(D2D1::ColorF::White)}, {1.f, D2D1::ColorF(D2D1::ColorF::LightGray)}};
 	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES eyeRadialProperties{{0., 0.}, {0., 0.}, eyeRadius, eyeRadius};
 	ID2D1GradientStopCollection * eyeRadialStopCollection{nullptr};
 	ID2D1RadialGradientBrush * eyeRadialBrush{nullptr};

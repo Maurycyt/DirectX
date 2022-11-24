@@ -108,12 +108,12 @@ void DirectX2DHelper::reloadTarget(HWND hwnd) {
 	if (target)
 		target->Release();
 
-	if (factory->CreateHwndRenderTarget(
+	if (GetClientRect(hwnd, &windowSize) == 0 ||
+	    factory->CreateHwndRenderTarget(
 	        RenderTargetProperties(),
 	        HwndRenderTargetProperties(hwnd, {UINT32(windowSize.right), UINT32(windowSize.bottom)}),
 	        &target
-	    ) != S_OK ||
-	    GetClientRect(hwnd, &windowSize) == 0) {
+	    ) != S_OK) {
 		throw std::runtime_error("Failed to reload target.");
 	}
 
