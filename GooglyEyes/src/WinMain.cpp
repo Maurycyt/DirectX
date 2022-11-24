@@ -96,16 +96,16 @@ namespace {
 
 		case WM_LBUTTONDOWN:
 			smile = true;
-			InvalidateRect(hwnd, nullptr, false);
 			return 0;
 
 		case WM_LBUTTONUP:
 			smile = false;
-			InvalidateRect(hwnd, nullptr, false);
 			return 0;
 
 		case WM_MOUSEMOVE:
+			SetCursor(LoadCursor(nullptr, IDC_HAND));
 			mousePosition = {float(GET_X_LPARAM(lParam)), float(GET_Y_LPARAM(lParam))};
+			smile = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
 			return 0;
 
 		case WM_PAINT: {
