@@ -5,34 +5,34 @@
 
 class DirectX2DHelper {
 	// CONSTANTS
-	const float pi = std::numbers::pi_v<float>;
+	static constexpr float pi = std::numbers::pi_v<float>;
 
-	const float bodyGradientRadius = 400.;
-	const float eyeVerticalOffset = 150.;
-	const float eyeHorizontalOffset = 150.;
-	const float eyeRadius = 100.;
-	const float pupilRadius = 30.;
+	static constexpr float bodyGradientRadius = 400.;
+	static constexpr float eyeVerticalOffset = 150.;
+	static constexpr float eyeHorizontalOffset = 150.;
+	static constexpr float eyeRadius = 100.;
+	static constexpr float pupilRadius = 30.;
 
-	const float bodyTop = -300.;
-	const float bodyLeft = -250.;
-	const float bodyRight = 250.;
-	const float bodyBottom = 200.;
+	static constexpr float bodyTop = -300.;
+	static constexpr float bodyLeft = -250.;
+	static constexpr float bodyRight = 250.;
+	static constexpr float bodyBottom = 200.;
 
-	const float mouthPendulumAmplitude = 15.;
+	static constexpr float mouthPendulumAmplitude = 15.;
 
-	const float snoutLeft = -75.;
-	const float snoutRight = 75.;
-	const float snoutTop = -50.;
-	const float snoutBottom = 75.;
+	static constexpr float snoutLeft = -75.;
+	static constexpr float snoutRight = 75.;
+	static constexpr float snoutTop = -50.;
+	static constexpr float snoutBottom = 75.;
 
-	const float mouthLeft = -100.;
-	const float mouthRight = 100.;
-	const float mouthTop = 100.;
-	const float mouthCenter = 125.;
-	const float mouthBottom = 175.;
+	static constexpr float mouthLeft = -100.;
+	static constexpr float mouthRight = 100.;
+	static constexpr float mouthTop = 100.;
+	static constexpr float mouthCenter = 125.;
+	static constexpr float mouthBottom = 175.;
 
 	// HELPFUL MEMBERS
-	static const int nBodyRadialStops = 2;
+	static constexpr int nBodyRadialStops = 2;
 	D2D1_GRADIENT_STOP bodyRadialStops[nBodyRadialStops]{
 	    {.0, D2D1::ColorF(D2D1::ColorF::Yellow)}, {1., D2D1::ColorF(D2D1::ColorF::Red)}};
 	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES bodyRadialProperties{
@@ -40,7 +40,7 @@ class DirectX2DHelper {
 	ID2D1GradientStopCollection * bodyRadialStopCollection{nullptr};
 	ID2D1RadialGradientBrush * bodyRadialBrush{nullptr};
 
-	static const int nEyeRadialStops = 2;
+	static constexpr int nEyeRadialStops = 2;
 	D2D1_GRADIENT_STOP eyeRadialStops[nEyeRadialStops]{
 	    {.8, D2D1::ColorF(D2D1::ColorF::White)}, {1., D2D1::ColorF(D2D1::ColorF::LightGray)}};
 	D2D1_RADIAL_GRADIENT_BRUSH_PROPERTIES eyeRadialProperties{{0., 0.}, {0., 0.}, eyeRadius, eyeRadius};
