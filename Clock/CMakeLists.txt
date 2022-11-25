@@ -6,7 +6,7 @@ project(${PROJECT_NAME})
 
 set(CMAKE_WIN32_EXECUTABLE "True")
 set(CMAKE_CXX_FLAGS
-        "/Wall /std:c++20 /DUNICODE")
+        "/Wall /std:c++20 /DUNICODE /TP /Zc:__cplusplus /EHs")
 
 set(SOURCE_FILES
         src/WinMain.h src/WinMain.cpp src/DirectX2DHelper.cpp src/DirectX2DHelper.h)
