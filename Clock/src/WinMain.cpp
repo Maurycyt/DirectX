@@ -68,17 +68,6 @@ INT WINAPI wWinMain(
 namespace {
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		switch (uMsg) {
-		case WM_CLOSE: {
-			int decision = MessageBox(
-			    hwnd, L"Are you sure you want to quit?", L"Are you sure?", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON1
-			);
-
-			if (decision == IDOK) {
-				DestroyWindow(hwnd);
-			}
-			return 0;
-		}
-
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
@@ -89,6 +78,10 @@ namespace {
 
 		case WM_TIMER:
 			InvalidateRect(hwnd, nullptr, false);
+			return 0;
+
+		case WM_MOUSEMOVE:
+			SetCursor(LoadCursor(nullptr, IDC_ARROW));
 			return 0;
 
 		case WM_PAINT: {

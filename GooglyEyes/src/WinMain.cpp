@@ -70,17 +70,6 @@ namespace {
 		static D2D1_POINT_2F mousePosition;
 
 		switch (uMsg) {
-		case WM_CLOSE: {
-			int decision = MessageBox(
-			    hwnd, L"Are you sure you want to quit?", L"Are you sure?", MB_OKCANCEL | MB_ICONQUESTION | MB_DEFBUTTON1
-			);
-
-			if (decision == IDOK) {
-				DestroyWindow(hwnd);
-			}
-			return 0;
-		}
-
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;

@@ -5,8 +5,8 @@
 using namespace D2D1;
 
 void DirectX2DHelper::initializeBrushes() {
-	if (target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Black), &solidBrushBlack) != S_OK ||
-	    target->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::SaddleBrown), &solidBrushSnout) != S_OK ||
+	if (target->CreateSolidColorBrush(ColorF(ColorF::Black), &solidBrushBlack) != S_OK ||
+	    target->CreateSolidColorBrush(ColorF(ColorF::SaddleBrown), &solidBrushSnout) != S_OK ||
 	    target->CreateGradientStopCollection(bodyRadialStops, nBodyRadialStops, &bodyRadialStopCollection) != S_OK ||
 	    target->CreateRadialGradientBrush(bodyRadialProperties, bodyRadialStopCollection, &bodyRadialBrush) != S_OK ||
 	    target->CreateGradientStopCollection(eyeRadialStops, nEyeRadialStops, &eyeRadialStopCollection) != S_OK ||
@@ -123,14 +123,14 @@ void DirectX2DHelper::reloadTarget(HWND hwnd) {
 
 void DirectX2DHelper::draw(const bool smile, const D2D1_POINT_2F mousePosition) {
 	// CONSTANTS
-	static D2D1::Matrix3x2F transform{};
-	const D2D1::Matrix3x2F translationToCentre{
-	    D2D1::Matrix3x2F::Translation(float(windowSize.right) / 2.f, float(windowSize.bottom) / 2.f)};
+	static Matrix3x2F transform{};
+	const Matrix3x2F translationToCentre{
+	    Matrix3x2F::Translation(float(windowSize.right) / 2.f, float(windowSize.bottom) / 2.f)};
 
 	// DRAWING
 	target->BeginDraw();
 	target->SetTransform(translationToCentre);
-	target->Clear(D2D1::ColorF(D2D1::ColorF::SkyBlue));
+	target->Clear(ColorF(ColorF::SkyBlue));
 
 	// Draw body
 	target->FillGeometry(bodyPath, bodyRadialBrush);
@@ -140,10 +140,10 @@ void DirectX2DHelper::draw(const bool smile, const D2D1_POINT_2F mousePosition) 
 	// Draw left eye
 	D2D1_POINT_2F lookVector;
 	float lookVectorLength;
-	transform.SetProduct(translationToCentre, D2D1::Matrix3x2F::Translation(-eyeHorizontalOffset, -eyeVerticalOffset));
+	transform.SetProduct(translationToCentre, Matrix3x2F::Translation(-eyeHorizontalOffset, -eyeVerticalOffset));
 	target->SetTransform(transform);
-	target->FillEllipse(D2D1::Ellipse({0., 0.}, eyeRadius, eyeRadius), eyeRadialBrush);
-	target->DrawEllipse(D2D1::Ellipse({0., 0.}, eyeRadius, eyeRadius), solidBrushBlack, 4.);
+	target->FillEllipse(Ellipse({0., 0.}, eyeRadius, eyeRadius), eyeRadialBrush);
+	target->DrawEllipse(Ellipse({0., 0.}, eyeRadius, eyeRadius), solidBrushBlack, 4.);
 	lookVector = {
 	    mousePosition.x - (float(windowSize.right) / 2.f - eyeHorizontalOffset),
 	    mousePosition.y - (float(windowSize.bottom) / 2.f - eyeVerticalOffset)};
@@ -152,13 +152,13 @@ void DirectX2DHelper::draw(const bool smile, const D2D1_POINT_2F mousePosition) 
 		lookVector.x *= (eyeRadius - pupilRadius) / lookVectorLength;
 		lookVector.y *= (eyeRadius - pupilRadius) / lookVectorLength;
 	}
-	target->FillEllipse(D2D1::Ellipse(lookVector, pupilRadius, pupilRadius), solidBrushBlack);
+	target->FillEllipse(Ellipse(lookVector, pupilRadius, pupilRadius), solidBrushBlack);
 
 	// Draw right eye
-	transform.SetProduct(translationToCentre, D2D1::Matrix3x2F::Translation(eyeHorizontalOffset, -eyeVerticalOffset));
+	transform.SetProduct(translationToCentre, Matrix3x2F::Translation(eyeHorizontalOffset, -eyeVerticalOffset));
 	target->SetTransform(transform);
-	target->FillEllipse(D2D1::Ellipse({0., 0.}, eyeRadius, eyeRadius), eyeRadialBrush);
-	target->DrawEllipse(D2D1::Ellipse({0., 0.}, eyeRadius, eyeRadius), solidBrushBlack, 4.);
+	target->FillEllipse(Ellipse({0., 0.}, eyeRadius, eyeRadius), eyeRadialBrush);
+	target->DrawEllipse(Ellipse({0., 0.}, eyeRadius, eyeRadius), solidBrushBlack, 4.);
 	lookVector = {
 	    mousePosition.x - (float(windowSize.right) / 2.f + eyeHorizontalOffset),
 	    mousePosition.y - (float(windowSize.bottom) / 2.f - eyeVerticalOffset)};
@@ -167,12 +167,12 @@ void DirectX2DHelper::draw(const bool smile, const D2D1_POINT_2F mousePosition) 
 		lookVector.x *= (eyeRadius - pupilRadius) / lookVectorLength;
 		lookVector.y *= (eyeRadius - pupilRadius) / lookVectorLength;
 	}
-	target->FillEllipse(D2D1::Ellipse(lookVector, pupilRadius, pupilRadius), solidBrushBlack);
+	target->FillEllipse(Ellipse(lookVector, pupilRadius, pupilRadius), solidBrushBlack);
 
 	// Draw snout and mouth
 	// Rotation setup
 	float angle = mouthPendulumAmplitude * std::sin(float(GetTickCount64() % 2000) / 1000.f * pi);
-	transform.SetProduct(D2D1::Matrix3x2F::Rotation(angle), translationToCentre);
+	transform.SetProduct(Matrix3x2F::Rotation(angle), translationToCentre);
 	target->SetTransform(transform);
 
 	// Draw snout
