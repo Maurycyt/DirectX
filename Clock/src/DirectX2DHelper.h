@@ -53,13 +53,32 @@ public:
 
 class DirectX2DHelper {
 	// HELPER MEMBERS
-	static constexpr LPCWSTR clockImagePath = L"../assets/Clock.png";
-	static constexpr LPCWSTR digitsImageUri = L"../assets/Digits.png";
-	static constexpr int numDigits = 10;
+	static constexpr LPCWSTR clockImagePath{L"../assets/Clock.png"};
+	static constexpr LPCWSTR digitsImagePath{L"../assets/Digits.png"};
+	static constexpr int numDigits{10};
+	static constexpr int numClockDigits{4};
+	static constexpr int digitWidth{108};
+	static constexpr int colonWidth{100};
+	static constexpr int digitHeight{192};
 
-	BitmapHelper clockBitmap;
-	ID2D1Bitmap * colonBitmap{nullptr};
-	ID2D1Bitmap * digitBitmaps[numDigits]{};
+	static constexpr int clockWidth{770};
+	static constexpr int clockHeight{400};
+
+	static constexpr int clockLeft{-clockWidth / 2};
+	static constexpr int clockTop{-clockHeight / 2};
+	static constexpr int clockRight{clockWidth / 2};
+	static constexpr int clockBottom{clockHeight / 2};
+
+	static constexpr int digitTop{-digitHeight / 2};
+	static constexpr int digitBottom{digitHeight / 2};
+
+	static constexpr int digitOffsets[4]{-250, -250 + digitWidth, 50, 50 + digitWidth};
+	static constexpr int colonOffset{-50};
+
+	BitmapHelper clockBitmap{};
+	BitmapHelper digitsBitmap{};
+	BitmapSegment colonBitmap{};
+	BitmapSegment digitBitmapSegments[numDigits]{};
 
 	// IMPORTANT MEMBERS
 	IWICImagingFactory * WICFactory{nullptr};
