@@ -81,6 +81,15 @@ DirectX2DHelper::DirectX2DHelper(HWND hwnd) {
 	}
 
 	new (&clockBitmap) BitmapHelper(WICFactory, target, clockImagePath);
+	new (&digitsBitmap) BitmapHelper(WICFactory, target, digitsImagePath);
+
+	for (int digit = 0; digit < numDigits; digit++) {
+		digitBitmapSegments[digit] =
+		    BitmapSegment(&digitsBitmap, {float(digit * digitWidth), 0, float((digit + 1) * digitWidth), digitHeight});
+	}
+	colonBitmap = BitmapSegment(
+	    &digitsBitmap, {float(numDigits * digitWidth), 0, float(numDigits * digitWidth + colonWidth), digitHeight}
+	);
 }
 
 void DirectX2DHelper::reloadTarget(HWND hwnd) {
@@ -97,20 +106,46 @@ void DirectX2DHelper::reloadTarget(HWND hwnd) {
 	}
 
 	clockBitmap.reloadBitmap(target);
+	digitsBitmap.reloadBitmap(target);
 }
 
 void DirectX2DHelper::draw() {
+	// CONSTANTS
+	static constexpr int minutesInDay{24 * 60};
+	static constexpr int secondsInDay{minutesInDay * 60};
+	static constexpr int divisors[numClockDigits]{10 * 60 * 60, 60 * 60, 10 * 60, 60};
+	static constexpr int modulos[numClockDigits]{3, 10, 6, 10};
+	static const int startingSecond{int(GetTickCount64() % minutesInDay) * 60};
+	static const unsigned long long startTimestamp = GetTickCount64();
+	static constexpr int speed{5};
+
 	Matrix3x2F transform{};
 	const Matrix3x2F translationToCentre{
 	    Matrix3x2F::Translation(float(windowSize.right) / 2.f, float(windowSize.bottom) / 2.f)};
 
+	// DRAWING
+	unsigned long long timestamp = GetTickCount64();
+	unsigned long long timestampDiff = timestamp - startTimestamp;
+	int second = int((startingSecond + timestampDiff * speed / 1000) % secondsInDay);
+
 	target->BeginDraw();
 	target->Clear(ColorF(ColorF::Purple));
 
-	transform.SetProduct(Matrix3x2F::Rotation(-10.f), translationToCentre);
+	transform.SetProduct(Matrix3x2F::Rotation(-5.f), translationToCentre);
 	target->SetTransform(transform);
 
-	clockBitmap.draw(RectF(-385, -200, 385, 200));
+	float displayOpacity = .5f / (1 + float(timestampDiff * speed) / 1000'000);
+
+	clockBitmap.draw({clockLeft, clockTop, clockRight, clockBottom});
+	for (int clockDigit = 0; clockDigit < numClockDigits; clockDigit++) {
+		int digitValue = second / divisors[clockDigit] % modulos[clockDigit];
+		digitBitmapSegments[digitValue].draw(
+		    {float(digitOffsets[clockDigit]), digitTop, float(digitOffsets[clockDigit] + digitWidth), digitBottom},
+		    displayOpacity
+		);
+	}
+	if (second % 2)
+		colonBitmap.draw({colonOffset, digitTop, colonOffset + digitWidth, digitBottom}, displayOpacity);
 
 	target->EndDraw();
 }

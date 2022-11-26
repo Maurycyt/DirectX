@@ -74,6 +74,7 @@ namespace {
 
 		case WM_SIZE:
 			d2DHelper.reloadTarget(hwnd);
+			InvalidateRect(hwnd, nullptr, false);
 			return 0;
 
 		case WM_TIMER:
