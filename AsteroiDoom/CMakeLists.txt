@@ -9,7 +9,14 @@ set(CMAKE_CXX_FLAGS
         "/Wall /std:c++20 /DUNICODE /TP /Zc:__cplusplus /EHs")
 
 set(SOURCE_FILES
-        src/WinMain.h src/WinMain.cpp src/DirectX2DUtils.cpp src/DirectX2DUtils.h)
+        src/WinMain.cpp
+        src/DirectX2DUtils.cpp
+        src/GameController.cpp
+        src/collidable/CollidableObject.cpp
+        src/collidable/Spaceship.cpp
+        src/collidable/Asteroid.cpp
+        src/collidable/Projectile.cpp
+        src/collidable/Arena.cpp)
 
 find_library(DIRECT2D d2d1)
 message(${DIRECT2D})
