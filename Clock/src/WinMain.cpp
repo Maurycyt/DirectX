@@ -1,5 +1,7 @@
 ﻿#include "WinMain.h"
+
 #include <numbers>
+#include <exception>
 
 namespace {
 	DirectX2DHelper d2DHelper;
@@ -48,7 +50,13 @@ INT WINAPI wWinMain(
 		return 0;
 	}
 
-	new (&d2DHelper) DirectX2DHelper(hwnd);
+	try {
+		new (&d2DHelper) DirectX2DHelper(hwnd);
+	} catch (std::exception & e) {
+		FatalAppExitA(0, e.what());
+		return 1;
+	}
+
 	ShowWindow(hwnd, nCmdShow);
 
 	UINT_PTR IDT_TIMER1 = 1;
@@ -67,31 +75,36 @@ INT WINAPI wWinMain(
 
 namespace {
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		switch (uMsg) {
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
+		try {
+			switch (uMsg) {
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return 0;
 
-		case WM_SIZE:
-			d2DHelper.reloadTarget(hwnd);
-			InvalidateRect(hwnd, nullptr, false);
-			return 0;
+			case WM_SIZE:
+				d2DHelper.reloadTarget(hwnd);
+				InvalidateRect(hwnd, nullptr, false);
+				return 0;
 
-		case WM_TIMER:
-			InvalidateRect(hwnd, nullptr, false);
-			return 0;
+			case WM_TIMER:
+				InvalidateRect(hwnd, nullptr, false);
+				return 0;
 
-		case WM_MOUSEMOVE:
-			SetCursor(LoadCursor(nullptr, IDC_ARROW));
-			return 0;
+			case WM_MOUSEMOVE:
+				SetCursor(LoadCursor(nullptr, IDC_ARROW));
+				return 0;
 
-		case WM_PAINT: {
-			d2DHelper.draw();
-			ValidateRect(hwnd, nullptr);
-			return 0;
-		}
+			case WM_PAINT: {
+				d2DHelper.draw();
+				ValidateRect(hwnd, nullptr);
+				return 0;
+			}
 
-		default:
+			default:
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
+		} catch (std::exception & e) {
+			FatalAppExitA(0, e.what());
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		}
 	}
