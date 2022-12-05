@@ -12,11 +12,14 @@ set(SOURCE_FILES
         src/WinMain.cpp
         src/DirectX2DUtils.cpp
         src/GameController.cpp
-        src/collidable/CollidableObject.cpp
-        src/collidable/Spaceship.cpp
-        src/collidable/Asteroid.cpp
-        src/collidable/Projectile.cpp
-        src/collidable/Arena.cpp)
+        src/collidable/base/CollidableObject.cpp
+        src/collidable/specific/Spaceship.cpp
+        src/collidable/specific/Asteroid.cpp
+        src/collidable/specific/Projectile.cpp
+        src/collidable/Arena.cpp
+        src/collidable/base/DamagableObject.cpp
+        src/collidable/base/DamagingObject.cpp
+        src/BitmapUtils.cpp)
 
 find_library(DIRECT2D d2d1)
 message(${DIRECT2D})

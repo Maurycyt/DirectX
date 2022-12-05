@@ -1,5 +1,6 @@
 # General
 ColumnLimit: 120
+IncludeBlocks: Regroup
 
 # Pointers and references
 PointerAlignment: Middle
@@ -16,7 +17,13 @@ BreakBeforeConceptDeclarations: false
 AlwaysBreakBeforeMultilineStrings: true
 BinPackParameters: false
 BinPackArguments: false
+PackConstructorInitializers: CurrentLine
 ReflowComments: true
+BreakBeforeBraces: Attach
+AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+AlwaysBreakTemplateDeclarations: Yes
 
 # Inlining
 AllowShortBlocksOnASingleLine: Never
@@ -26,12 +33,6 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None
 AllowShortLoopsOnASingleLine: false
-
-# Breaking
-BreakBeforeBraces: Attach
-AlignAfterOpenBracket: BlockIndent
-BreakConstructorInitializers: AfterColon
-BreakInheritanceList: AfterColon
 
 # Namespaces
 NamespaceIndentation: All

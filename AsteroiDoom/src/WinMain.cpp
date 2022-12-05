@@ -1,4 +1,5 @@
 ﻿#include "WinMain.h"
+
 #include <exception>
 #include <numbers>
 
@@ -28,10 +29,10 @@ INT WINAPI wWinMain(
 
 	// Create the window.
 	HWND hwnd = CreateWindowEx(
-	    0,                   // Optional window styles.
-	    CLASS_NAME,          // Window class
-	    L"Clock",            // Window text
-	    WS_OVERLAPPEDWINDOW, // Window style
+	    0,             // Optional window styles.
+	    CLASS_NAME,    // Window class
+	    L"Clock",      // Window text
+	    WS_OVERLAPPED, // Window style
 
 	    // Size and position
 	    CW_USEDEFAULT,
@@ -49,17 +50,18 @@ INT WINAPI wWinMain(
 		return 0;
 	}
 
+	UINT_PTR IDT_TIMER1 = 1;
+
 	try {
 		new (&d2DHelper) DirectX2DHelper(hwnd);
+		SetWindowLong(hwnd, GWL_STYLE, WS_MAXIMIZE);
+		ShowWindow(hwnd, nCmdShow);
+		SendMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+		SetTimer(hwnd, IDT_TIMER1, 5, nullptr);
 	} catch (std::exception & e) {
 		FatalAppExitA(0, e.what());
 		return 1;
 	}
-
-	ShowWindow(hwnd, nCmdShow);
-
-	UINT_PTR IDT_TIMER1 = 1;
-	SetTimer(hwnd, IDT_TIMER1, 5, nullptr);
 
 	// Run the message loop.
 	MSG msg = {};
@@ -90,7 +92,7 @@ namespace {
 				return 0;
 
 			case WM_MOUSEMOVE:
-				SetCursor(LoadCursor(nullptr, IDC_ARROW));
+				SetCursor(nullptr);
 				return 0;
 
 			case WM_PAINT: {
@@ -102,7 +104,7 @@ namespace {
 			default:
 				return DefWindowProc(hwnd, uMsg, wParam, lParam);
 			}
-		} catch(std::exception & e) {
+		} catch (std::exception & e) {
 			FatalAppExitA(0, e.what());
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		}
