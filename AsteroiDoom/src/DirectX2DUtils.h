@@ -2,10 +2,11 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include "AsteroiDoomConstants.h"
 #include "collidable/Arena.h"
+#include "utils/AsteroiDoomConstants.h"
 
 #include <d2d1_3.h>
+#include <memory>
 #include <numbers>
 #include <wincodec.h>
 
@@ -16,10 +17,16 @@ class DirectX2DHelper {
 	ID2D1HwndRenderTarget * target{nullptr};
 	RECT windowSize{0, 0};
 
-	Arena arena{ArenaWidth, ArenaHeight, SpawnAreaMargin, nullptr};
-
+	BitmapHelper SpaceshipBitmap{};
+	BitmapHelper ProjectileBitmap{};
 	BitmapHelper Asteroid20Bitmap{};
-	BitmapSegment Asteroid20BitmapSegment{&Asteroid20Bitmap, {0, 0, 40, 40}};
+	const BitmapSegment SpaceshipBitmapSegment{&SpaceshipBitmap, {0, 0, 60, 60}};
+	const BitmapSegment ProjectileBitmapSegment{&ProjectileBitmap, {0, 0, 10, 10}};
+	const BitmapSegment Asteroid20BitmapSegment{&Asteroid20Bitmap, {0, 0, 40, 40}};
+
+	std::shared_ptr<Spaceship> spaceship{};
+
+	Arena arena;
 
 public:
 	DirectX2DHelper();
@@ -30,5 +37,5 @@ public:
 
 	void reloadTarget(HWND hwnd);
 
-	void draw();
+	void nextFrame();
 };

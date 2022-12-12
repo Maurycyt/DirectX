@@ -14,4 +14,6 @@ public:
 	bool takeDamage(unsigned int points);
 
 	[[nodiscard]] bool destroyed() const;
+
+	unsigned int pointsForDestruction();
 };

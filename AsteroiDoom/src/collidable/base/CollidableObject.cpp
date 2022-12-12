@@ -18,11 +18,12 @@ MovementData::MovementData(D2D_POINT_2F location, float rotation, D2D_POINT_2F v
 }
 
 void MovementData::move(unsigned int millis, D2D_RECT_F modulo) {
+	float seconds = float(millis) / 1000;
 	float width = modulo.right - modulo.left;
 	float height = modulo.bottom - modulo.top;
-	location.x += velocity.x * float(millis) / 1000;
-	location.y += velocity.y * float(millis) / 1000;
-	rotation += spin * float(millis) / 1000;
+	location.x += velocity.x * seconds;
+	location.y += velocity.y * seconds;
+	rotation += spin * seconds;
 	if (location.x < modulo.left) {
 		location.x += width;
 	} else if (location.x > modulo.right) {

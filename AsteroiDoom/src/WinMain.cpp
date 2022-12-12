@@ -96,7 +96,7 @@ namespace {
 				return 0;
 
 			case WM_PAINT: {
-				d2DHelper.draw();
+				d2DHelper.nextFrame();
 				ValidateRect(hwnd, nullptr);
 				return 0;
 			}

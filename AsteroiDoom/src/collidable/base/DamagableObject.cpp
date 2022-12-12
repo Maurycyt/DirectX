@@ -11,10 +11,14 @@ DamagableObject::DamagableObject(
 }
 
 bool DamagableObject::takeDamage(unsigned int points) {
-	points -= min(points, hitPoints);
+	hitPoints -= min(points, hitPoints);
 	return destroyed();
 }
 
 bool DamagableObject::destroyed() const {
 	return hitPoints == 0;
+}
+
+unsigned int DamagableObject::pointsForDestruction() {
+	return (unsigned int)(size) * (unsigned int)(size) / 25;
 }

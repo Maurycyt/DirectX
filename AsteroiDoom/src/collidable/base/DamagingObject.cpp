@@ -13,3 +13,7 @@ DamagingObject::DamagingObject(
 unsigned int DamagingObject::getDamagePoints() const {
 	return damagePoints;
 }
+
+void DamagingObject::dealDamage(DamagableObject & victim) const {
+	victim.takeDamage(damagePoints);
+}

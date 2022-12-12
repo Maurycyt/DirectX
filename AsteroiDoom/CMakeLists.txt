@@ -11,7 +11,6 @@ set(CMAKE_CXX_FLAGS
 set(SOURCE_FILES
         src/WinMain.cpp
         src/DirectX2DUtils.cpp
-        src/GameController.cpp
         src/collidable/base/CollidableObject.cpp
         src/collidable/specific/Spaceship.cpp
         src/collidable/specific/Asteroid.cpp
@@ -19,7 +18,8 @@ set(SOURCE_FILES
         src/collidable/Arena.cpp
         src/collidable/base/DamagableObject.cpp
         src/collidable/base/DamagingObject.cpp
-        src/BitmapUtils.cpp)
+        src/utils/BitmapUtils.cpp
+        src/utils/Random.cpp)
 
 find_library(DIRECT2D d2d1)
 message(${DIRECT2D})

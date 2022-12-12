@@ -2,7 +2,7 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include "../../BitmapUtils.h"
+#include "../../utils/BitmapUtils.h"
 
 #include <d2d1.h>
 
@@ -46,5 +46,5 @@ public:
 	    D2D1_BITMAP_INTERPOLATION_MODE interpolationMode = D2D1_BITMAP_INTERPOLATION_MODE_LINEAR
 	) const;
 
-	void move(unsigned int millis, D2D_RECT_F modulo);
+	virtual void move(unsigned int millis, D2D_RECT_F modulo);
 };
