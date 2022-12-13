@@ -89,6 +89,7 @@ void DirectX2DHelper::nextFrame() {
 			swprintf(message, 1024, L"Your score is %llu.", score);
 			int decision = MessageBox(target->GetHwnd(), message, L"Game over!", MB_RETRYCANCEL | MB_ICONEXCLAMATION);
 			if (decision == IDRETRY) {
+				score = 0;
 				spaceship = std::make_shared<Spaceship>(
 				    SpaceshipSize,
 				    MovementData(),
