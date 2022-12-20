@@ -1,6 +1,7 @@
 #include "DirectX2DUtils.h"
 
 #include <stdexcept>
+#include <string>
 
 using namespace D2D1;
 
@@ -33,6 +34,11 @@ DirectX2DHelper::DirectX2DHelper(HWND hwnd) :
 	new (&SpaceshipBitmap) BitmapHelper(WICFactory, target, SpaceshipPath);
 	new (&ProjectileBitmap) BitmapHelper(WICFactory, target, ProjectilePath);
 	new (&Asteroid20Bitmap) BitmapHelper(WICFactory, target, Asteroid20Path);
+
+	ScoreText =
+	    TextHelper(25, L"Courier New", {-ArenaWidth / 2, ArenaHeight / 2 - 50, ArenaWidth / 2, ArenaHeight / 2}, target);
+	HealthText =
+	    TextHelper(25, L"Courier New", {-ArenaWidth / 2, ArenaHeight / 2 - 25, ArenaWidth / 2, ArenaHeight / 2}, target);
 }
 
 void DirectX2DHelper::reloadTarget(HWND hwnd) {
@@ -51,6 +57,9 @@ void DirectX2DHelper::reloadTarget(HWND hwnd) {
 	SpaceshipBitmap.reloadBitmap(target);
 	ProjectileBitmap.reloadBitmap(target);
 	Asteroid20Bitmap.reloadBitmap(target);
+
+	ScoreText.reloadBrush(target);
+	HealthText.reloadBrush(target);
 }
 
 void DirectX2DHelper::nextFrame() {
@@ -69,6 +78,7 @@ void DirectX2DHelper::nextFrame() {
 	target->Clear(ColorF(ColorF::Black));
 
 	if (!gameOver) {
+		// Draw arena with logic handling
 		target->SetTransform(ArenaTranslation);
 
 		arena.move(timestampDiff);
@@ -81,6 +91,14 @@ void DirectX2DHelper::nextFrame() {
 		}
 		arena.draw();
 		score += arena.checkCollisions();
+
+		// Write score and HP
+		std::wstring scoreTextContent = L"SCORE: ";
+		scoreTextContent += std::to_wstring(score);
+		std::wstring healthTextContent = L"HEALTH: ";
+		healthTextContent += std::to_wstring(spaceship->getHitPoints());
+		ScoreText.draw(scoreTextContent.c_str(), scoreTextContent.size());
+		HealthText.draw(healthTextContent.c_str(), healthTextContent.size());
 
 		// Handling game over
 		if (spaceship->destroyed()) {

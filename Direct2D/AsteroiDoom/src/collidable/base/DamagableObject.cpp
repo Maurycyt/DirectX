@@ -15,6 +15,10 @@ bool DamagableObject::takeDamage(unsigned int points) {
 	return destroyed();
 }
 
+unsigned int DamagableObject::getHitPoints() const {
+	return hitPoints;
+}
+
 bool DamagableObject::destroyed() const {
 	return hitPoints == 0;
 }

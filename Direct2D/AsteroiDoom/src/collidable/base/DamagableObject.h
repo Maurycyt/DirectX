@@ -13,6 +13,8 @@ public:
 
 	bool takeDamage(unsigned int points);
 
+	[[nodiscard]] unsigned int getHitPoints() const;
+
 	[[nodiscard]] bool destroyed() const;
 
 	unsigned int pointsForDestruction();

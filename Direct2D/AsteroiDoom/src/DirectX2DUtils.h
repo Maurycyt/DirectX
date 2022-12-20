@@ -4,6 +4,7 @@
 
 #include "collidable/Arena.h"
 #include "utils/AsteroiDoomConstants.h"
+#include "utils/TextUtils.h"
 
 #include <d2d1_3.h>
 #include <memory>
@@ -23,6 +24,9 @@ class DirectX2DHelper {
 	const BitmapSegment SpaceshipBitmapSegment{&SpaceshipBitmap, {0, 0, 60, 60}};
 	const BitmapSegment ProjectileBitmapSegment{&ProjectileBitmap, {0, 0, 10, 10}};
 	const BitmapSegment Asteroid20BitmapSegment{&Asteroid20Bitmap, {0, 0, 40, 40}};
+
+	TextHelper ScoreText{};
+	TextHelper HealthText{};
 
 	std::shared_ptr<Spaceship> spaceship{};
 

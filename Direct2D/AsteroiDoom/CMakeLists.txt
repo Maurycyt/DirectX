@@ -19,11 +19,14 @@ set(SOURCE_FILES
         src/collidable/base/DamagableObject.cpp
         src/collidable/base/DamagingObject.cpp
         src/utils/BitmapUtils.cpp
+        src/utils/TextUtils.cpp
         src/utils/Random.cpp)
 
 find_library(DIRECT2D d2d1)
+find_library(DWRITE dwrite)
 message(${DIRECT2D})
+message(${DWRITE})
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} ${DIRECT2D})
+target_link_libraries(${PROJECT_NAME} ${DIRECT2D} ${DWRITE})
