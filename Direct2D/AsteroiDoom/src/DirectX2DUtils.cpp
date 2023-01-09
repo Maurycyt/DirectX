@@ -8,6 +8,7 @@ using namespace D2D1;
 DirectX2DHelper::DirectX2DHelper() = default;
 
 DirectX2DHelper::DirectX2DHelper(HWND hwnd) :
+    hwnd(hwnd),
     spaceship(std::make_shared<Spaceship>(
         SpaceshipSize,
         MovementData(),
@@ -41,7 +42,8 @@ DirectX2DHelper::DirectX2DHelper(HWND hwnd) :
 	    TextHelper(25, L"Courier New", {-ArenaWidth / 2, ArenaHeight / 2 - 25, ArenaWidth / 2, ArenaHeight / 2}, target);
 }
 
-void DirectX2DHelper::reloadTarget(HWND hwnd) {
+void DirectX2DHelper::reloadTarget(HWND newHwnd) {
+	hwnd = newHwnd;
 	if (target)
 		target->Release();
 
@@ -62,6 +64,10 @@ void DirectX2DHelper::reloadTarget(HWND hwnd) {
 	HealthText.reloadBrush(target);
 }
 
+void DirectX2DHelper::reloadTarget() {
+	reloadTarget(hwnd);
+}
+
 void DirectX2DHelper::nextFrame() {
 	const static unsigned long long startTimestamp = GetTickCount64();
 	static unsigned long long previousTimestamp = startTimestamp;
@@ -74,6 +80,7 @@ void DirectX2DHelper::nextFrame() {
 	static bool gameOver = false;
 
 	// DRAWING
+	drawing:
 	target->BeginDraw();
 	target->Clear(ColorF(ColorF::Black));
 
@@ -126,7 +133,10 @@ void DirectX2DHelper::nextFrame() {
 		}
 	}
 
-	target->EndDraw();
+	if (target->EndDraw() == D2DERR_RECREATE_TARGET) {
+		reloadTarget();
+		goto drawing;
+	}
 }
 
 DirectX2DHelper::~DirectX2DHelper() {

@@ -13,6 +13,7 @@
 
 class DirectX2DHelper {
 	// IMPORTANT MEMBERS
+	HWND hwnd{};
 	IWICImagingFactory * WICFactory{nullptr};
 	ID2D1Factory * D2DFactory{nullptr};
 	ID2D1HwndRenderTarget * target{nullptr};
@@ -39,7 +40,9 @@ public:
 
 	~DirectX2DHelper();
 
-	void reloadTarget(HWND hwnd);
+	void reloadTarget(HWND newHwnd);
+
+	void reloadTarget();
 
 	void nextFrame();
 };
