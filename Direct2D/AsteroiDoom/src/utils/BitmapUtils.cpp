@@ -32,8 +32,6 @@ BitmapHelper::~BitmapHelper() {
 }
 
 void BitmapHelper::reloadBitmap(ID2D1HwndRenderTarget * renderTarget) {
-	static unsigned int timesReloaded = 0;
-	timesReloaded++;
 	if (bitmap)
 		bitmap->Release();
 
