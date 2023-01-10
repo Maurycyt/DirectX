@@ -34,12 +34,18 @@ DirectX2DHelper::DirectX2DHelper(HWND hwnd) :
 
 	new (&SpaceshipBitmap) BitmapHelper(WICFactory, target, SpaceshipPath);
 	new (&ProjectileBitmap) BitmapHelper(WICFactory, target, ProjectilePath);
-	new (&Asteroid20Bitmap) BitmapHelper(WICFactory, target, Asteroid20Path);
+	new (&AsteroidBitmaps[0]) BitmapHelper(WICFactory, target, Asteroid20Path);
+	new (&AsteroidBitmaps[1]) BitmapHelper(WICFactory, target, Asteroid30Path);
 
 	ScoreText =
 	    TextHelper(25, L"Courier New", {-ArenaWidth / 2, ArenaHeight / 2 - 50, ArenaWidth / 2, ArenaHeight / 2}, target);
 	HealthText =
 	    TextHelper(25, L"Courier New", {-ArenaWidth / 2, ArenaHeight / 2 - 25, ArenaWidth / 2, ArenaHeight / 2}, target);
+}
+
+unsigned int DirectX2DHelper::randomAsteroidType() {
+	static std::uniform_int_distribution<std::mt19937::result_type> dist(0, numOfAsteroidTypes - 1);
+	return dist(rng);
 }
 
 void DirectX2DHelper::reloadTarget(HWND newHwnd) {
@@ -58,7 +64,9 @@ void DirectX2DHelper::reloadTarget(HWND newHwnd) {
 
 	SpaceshipBitmap.reloadBitmap(target);
 	ProjectileBitmap.reloadBitmap(target);
-	Asteroid20Bitmap.reloadBitmap(target);
+	for (auto & asteroidBitmap : AsteroidBitmaps) {
+		asteroidBitmap.reloadBitmap(target);
+	}
 
 	ScoreText.reloadBrush(target);
 	HealthText.reloadBrush(target);
@@ -79,8 +87,8 @@ void DirectX2DHelper::nextFrame() {
 	static unsigned long long score = 0;
 	static bool gameOver = false;
 
-	// DRAWING
-	drawing:
+// DRAWING
+drawing:
 	target->BeginDraw();
 	target->Clear(ColorF(ColorF::Black));
 
@@ -93,7 +101,13 @@ void DirectX2DHelper::nextFrame() {
 			arena.addProjectile(spaceship->shoot(timestamp));
 		}
 		if (timestamp - previousAsteroidSpawnTimestamp > AsteroidSpawnDelay) {
-			arena.spawnAsteroid(20, Asteroid20BitmapSegment, 50, 50);
+			unsigned int asteroidType = randomAsteroidType();
+			arena.spawnAsteroid(
+			    asteroidSizes[asteroidType],
+			    AsteroidBitmapSegments[asteroidType],
+			    asteroidHealth[asteroidType],
+			    asteroidHealth[asteroidType]
+			);
 			previousAsteroidSpawnTimestamp = timestamp;
 		}
 		arena.draw();

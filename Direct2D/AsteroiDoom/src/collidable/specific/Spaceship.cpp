@@ -86,12 +86,10 @@ MovementData Spaceship::getProjectileSpawnMovement() {
 	switch (side) {
 	case Side::Left:
 		result.location.x = -gunOffset;
-		result.spin = 60;
 		result.velocity.x = 10;
 		break;
 	case Side::Right:
 		result.location.x = gunOffset;
-		result.spin = -60;
 		result.velocity.x = -10;
 		break;
 	}

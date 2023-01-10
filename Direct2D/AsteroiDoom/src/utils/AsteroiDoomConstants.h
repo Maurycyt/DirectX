@@ -34,3 +34,4 @@ const float SpaceshipSize = 25;
 const LPCWSTR SpaceshipPath = L"../assets/Spaceship.png";
 const LPCWSTR ProjectilePath = L"../assets/Projectile.png";
 const LPCWSTR Asteroid20Path = L"../assets/Asteroid20.png";
+const LPCWSTR Asteroid30Path = L"../assets/Asteroid30.png";

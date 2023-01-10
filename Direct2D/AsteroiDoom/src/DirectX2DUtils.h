@@ -10,9 +10,9 @@
 #include <memory>
 #include <numbers>
 #include <wincodec.h>
+#include <random>
 
 class DirectX2DHelper {
-	// IMPORTANT MEMBERS
 	HWND hwnd{};
 	IWICImagingFactory * WICFactory{nullptr};
 	ID2D1Factory * D2DFactory{nullptr};
@@ -21,10 +21,14 @@ class DirectX2DHelper {
 
 	BitmapHelper SpaceshipBitmap{};
 	BitmapHelper ProjectileBitmap{};
-	BitmapHelper Asteroid20Bitmap{};
+	BitmapHelper AsteroidBitmaps[2]{};
 	const BitmapSegment SpaceshipBitmapSegment{&SpaceshipBitmap, {0, 0, 60, 60}};
 	const BitmapSegment ProjectileBitmapSegment{&ProjectileBitmap, {0, 0, 10, 10}};
-	const BitmapSegment Asteroid20BitmapSegment{&Asteroid20Bitmap, {0, 0, 40, 40}};
+	static const unsigned int numOfAsteroidTypes = 2;
+	const BitmapSegment AsteroidBitmapSegments[numOfAsteroidTypes]{
+	    {&AsteroidBitmaps[0], {0, 0, 40, 40}}, {&AsteroidBitmaps[1], {0, 0, 60, 60}}};
+	static constexpr float asteroidSizes[numOfAsteroidTypes]{20, 30};
+	static constexpr unsigned int asteroidHealth[numOfAsteroidTypes]{50, 150};
 
 	TextHelper ScoreText{};
 	TextHelper HealthText{};
@@ -33,6 +37,9 @@ class DirectX2DHelper {
 
 	Arena arena;
 
+	std::mt19937 rng{std::random_device{}()};
+
+	unsigned int randomAsteroidType();
 public:
 	DirectX2DHelper();
 

@@ -29,10 +29,10 @@ INT WINAPI wWinMain(
 
 	// Create the window.
 	HWND hwnd = CreateWindowEx(
-	    0,             // Optional window styles.
-	    CLASS_NAME,    // Window class
-	    L"Clock",      // Window text
-	    WS_OVERLAPPED, // Window style
+	    0,              // Optional window styles.
+	    CLASS_NAME,     // Window class
+	    L"AsteroiDoom", // Window text
+	    WS_OVERLAPPED,  // Window style
 
 	    // Size and position
 	    CW_USEDEFAULT,
