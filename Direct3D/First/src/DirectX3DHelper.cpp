@@ -1,7 +1,10 @@
 #include "DirectX3DHelper.h"
 
+#include "DirectXMath.h"
 #include "pixel_shader.h"
 #include "vertex_shader.h"
+
+using namespace DirectX;
 
 namespace {
 	struct vertex_t {
@@ -12,13 +15,73 @@ namespace {
 	size_t const VERTEX_SIZE = sizeof(vertex_t);
 
 	vertex_t triangleVertices[] = {
-	    {0.0f, 1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f},
-	    {1.0f, 0.0f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f},
-	    {-1.0f, -1.0f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f}};
+	    // Przód
+	    -1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
+	     1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
+	    -1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
+
+	     1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
+	     1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
+	    -1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
+
+	    // Prawa
+	    1.0f, 1.0f,-1.0f,   1.0f,0.5f,0.0f,1.0f,
+	    1.0f, 1.0f, 1.0f,   1.0f,0.5f,0.0f,1.0f,
+	    1.0f,-1.0f,-1.0f,   0.5f,0.0f,0.0f,1.0f,
+
+	    1.0f, 1.0f, 1.0f,   1.0f,0.5f,0.0f,1.0f,
+	    1.0f,-1.0f, 1.0f,   0.5f,0.0f,0.0f,1.0f,
+	    1.0f,-1.0f,-1.0f,   0.5f,0.0f,0.0f,1.0f,
+
+	    // Tył
+	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
+	    -1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
+	    -1.0f,-1.0f, 1.0f,  0.0f,0.5f,0.0f,1.0f,
+
+	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
+	    -1.0f,-1.0f, 1.0f,  0.0f,0.5f,0.0f,1.0f,
+	     1.0f,-1.0f, 1.0f,  0.5f,0.5f,0.0f,1.0f,
+
+	    // Lewa
+	    -1.0f, 1.0f, 1.0f,  0.5f,0.0f,1.0f,1.0f,
+	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
+	    -1.0f,-1.0f, 1.0f,  0.0f,0.0f,0.5f,1.0f,
+
+	    -1.0f,-1.0f, 1.0f,  0.0f,0.0f,0.5f,1.0f,
+	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
+	    -1.0f,-1.0f,-1.0f,  0.0f,0.0f,0.5f,1.0f,
+
+	    // Góra
+	    -1.0f, 1.0f, 1.0f,  0.5f,0.5f,0.5f,1.0f,
+	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
+	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
+
+	    -1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
+	     1.0f, 1.0f, 1.0f,  1.0f,0.5f,0.0f,1.0f,
+	     1.0f, 1.0f,-1.0f,  1.0f,0.75f,0.25f,1.0f,
+
+	    // Dół
+	    -1.0f,-1.0f,-1.0f,  1.0f,0.5f,1.0f,1.0f,
+	     1.0f,-1.0f,-1.0f,  0.5f,0.0f,0.5f,1.0f,
+	     1.0f,-1.0f, 1.0f,  1.0f,0.5f,1.0f,1.0f,
+
+	     1.0f,-1.0f, 1.0f,  1.0f,0.5f,1.0f,1.0f,
+	    -1.0f,-1.0f, 1.0f,  0.5f,0.0f,0.5f,1.0f,
+	    -1.0f,-1.0f,-1.0f,  1.0f,0.5f,1.0f,1.0f,
+	};
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
 
 	size_t const NUM_VERTICES = VERTEX_BUFFER_SIZE / sizeof(vertex_t);
+
+	struct vs_const_buffer_t {
+		XMFLOAT4X4 matWorldViewProj;
+		XMFLOAT4 padding[(256 - sizeof(XMFLOAT4X4)) / sizeof(XMFLOAT4)];
+	};
+
+	vs_const_buffer_t vsConstBuffer;
+
+	size_t const CONSTANT_BUFFER_SIZE = sizeof(vsConstBuffer);
 } // namespace
 
 DirectX3DHelper::DirectX3DHelper() = default;
@@ -69,6 +132,11 @@ void DirectX3DHelper::populateCommandList() {
 
 	// Set necessary state.
 	commandList->SetGraphicsRootSignature(rootSignature.Get());
+
+	ID3D12DescriptorHeap * descriptorHeaps[] = {cbvDescriptorHeap.Get()};
+	commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	commandList->SetGraphicsRootDescriptorTable(0, cbvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+
 	commandList->RSSetViewports(1, &viewport);
 	commandList->RSSetScissorRects(1, &scissorRect);
 
@@ -99,7 +167,7 @@ void DirectX3DHelper::populateCommandList() {
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
-	commandList->DrawInstanced(3, 1, 0, 0);
+	commandList->DrawInstanced(NUM_VERTICES, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.
 	auto barrier2 = D3D12_RESOURCE_BARRIER({
@@ -118,8 +186,38 @@ void DirectX3DHelper::populateCommandList() {
 	ThrowIfFailed(commandList->Close());
 }
 
+void DirectX3DHelper::setWVPMatrix() {
+	static float angle = .0f;
+	angle += 1.f / 64;
+	XMMATRIX wvp_matrix = XMMatrixMultiply(
+	    XMMatrixRotationY(2.5f * angle),
+	    XMMatrixRotationX(static_cast<FLOAT>(sinf(angle)) / 2.0f)
+	);
+	wvp_matrix = XMMatrixMultiply(
+	    wvp_matrix,
+	    XMMatrixTranslation(0.0f, 0.0f, 4.0f)
+	);
+	wvp_matrix = XMMatrixMultiply(
+	    wvp_matrix,
+	    XMMatrixPerspectiveFovLH(
+	        45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f
+	    )
+	);
+	wvp_matrix = XMMatrixTranspose(wvp_matrix);
+	XMStoreFloat4x4(
+	    &vsConstBuffer.matWorldViewProj,
+	    wvp_matrix
+	);
+	memcpy(
+	    pcBufferDataBegin,
+	    &vsConstBuffer,
+	    CONSTANT_BUFFER_SIZE
+	);
+}
+
 void DirectX3DHelper::draw() {
 	populateCommandList();
+	setWVPMatrix();
 
 	ID3D12CommandList * ppCommandLists[] = {commandList.Get()};
 	commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
@@ -130,8 +228,16 @@ void DirectX3DHelper::draw() {
 }
 
 void DirectX3DHelper::loadPipeline() {
+	// Debug layer
+	UINT dxgi_factory_flag = 0;
+	ComPtr<ID3D12Debug> debug_controller = nullptr;
+	D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller));
+	debug_controller->EnableDebugLayer();
+	dxgi_factory_flag |= DXGI_CREATE_FACTORY_DEBUG;
+
+
 	// Factory and device
-	ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)));
+	ThrowIfFailed(CreateDXGIFactory2(dxgi_factory_flag, IID_PPV_ARGS(&factory)));
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device)));
 
 	// Command queue
@@ -158,11 +264,21 @@ void DirectX3DHelper::loadPipeline() {
 
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 
-	// Descriptor heap
+	// Vertex buffer descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{
 	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV, .NumDescriptors = frameCount, .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE};
 	ThrowIfFailed(device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap)));
 	rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+	// Constant buffer descriptor heap
+	D3D12_DESCRIPTOR_HEAP_DESC cbvDescriptorHeapDesc {
+	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+	    .NumDescriptors = 1,
+	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
+	    .NodeMask = 0
+	};
+
+	device->CreateDescriptorHeap(&cbvDescriptorHeapDesc, IID_PPV_ARGS(&cbvDescriptorHeap));
 
 	// Frame resources
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptorHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
@@ -177,13 +293,29 @@ void DirectX3DHelper::loadPipeline() {
 }
 
 void DirectX3DHelper::loadAssets() {
-	// Empty root signature
+	// Root signature with constant buffer
+	D3D12_DESCRIPTOR_RANGE descriptorRange{
+	    .RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+	    .NumDescriptors = 1,
+	    .BaseShaderRegister = 0,
+	    .RegisterSpace = 0,
+	    .OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND};
+
+	D3D12_ROOT_PARAMETER rootParameters[] = {D3D12_ROOT_PARAMETER{
+	    .ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+	    .DescriptorTable = {1, &descriptorRange},
+	    .ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX}};
+
 	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc{
-	    .NumParameters = 0,
-	    .pParameters = nullptr,
+	    .NumParameters = _countof(rootParameters),
+	    .pParameters = rootParameters,
 	    .NumStaticSamplers = 0,
 	    .pStaticSamplers = nullptr,
-	    .Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT};
+	    .Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+	             D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+	             D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+	             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+	             D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS};
 
 	ComPtr<ID3DBlob> signature{};
 	ComPtr<ID3DBlob> error{};
@@ -263,14 +395,14 @@ void DirectX3DHelper::loadAssets() {
 	ThrowIfFailed(commandList->Close());
 
 	// Vertex buffer
-	D3D12_HEAP_PROPERTIES heapProperties{
+	D3D12_HEAP_PROPERTIES rtvHeapProperties{
 	    .Type = D3D12_HEAP_TYPE_UPLOAD,
 	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
 	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
 	    .CreationNodeMask = 1,
 	    .VisibleNodeMask = 1};
 
-	D3D12_RESOURCE_DESC resourceDesc = {
+	D3D12_RESOURCE_DESC rtvResourceDesc = {
 	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 	    .Alignment = 0,
 	    .Width = VERTEX_BUFFER_SIZE,
@@ -283,17 +415,17 @@ void DirectX3DHelper::loadAssets() {
 	    .Flags = D3D12_RESOURCE_FLAG_NONE};
 
 	ThrowIfFailed(device->CreateCommittedResource(
-	    &heapProperties,
+	    &rtvHeapProperties,
 	    D3D12_HEAP_FLAG_NONE,
-	    &resourceDesc,
+	    &rtvResourceDesc,
 	    D3D12_RESOURCE_STATE_GENERIC_READ,
 	    nullptr,
 	    IID_PPV_ARGS(&vertexBuffer)
 	));
 
 	UINT8 * pVertexDataBegin;
-	D3D12_RANGE readRange{0, 0};
-	ThrowIfFailed(vertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)));
+	D3D12_RANGE vertexDataReadRange{0, 0};
+	ThrowIfFailed(vertexBuffer->Map(0, &vertexDataReadRange, (void **)(&pVertexDataBegin)));
 	memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
 	vertexBuffer->Unmap(0, nullptr);
 
@@ -302,6 +434,48 @@ void DirectX3DHelper::loadAssets() {
 	    .SizeInBytes = VERTEX_BUFFER_SIZE,
 	    .StrideInBytes = VERTEX_SIZE,
 	};
+
+	// Constant buffer
+	D3D12_HEAP_PROPERTIES cbvHeapProperties{
+	    .Type = D3D12_HEAP_TYPE_UPLOAD,
+	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+	    .CreationNodeMask = 1,
+	    .VisibleNodeMask = 1};
+
+	D3D12_RESOURCE_DESC cbvResourceDesc = {
+	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+	    .Alignment = 0,
+	    .Width = CONSTANT_BUFFER_SIZE,
+	    .Height = 1,
+	    .DepthOrArraySize = 1,
+	    .MipLevels = 1,
+	    .Format = DXGI_FORMAT_UNKNOWN,
+	    .SampleDesc = {.Count = 1, .Quality = 0},
+	    .Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+	    .Flags = D3D12_RESOURCE_FLAG_NONE};
+
+	ThrowIfFailed(device->CreateCommittedResource(
+	    &cbvHeapProperties,
+	    D3D12_HEAP_FLAG_NONE,
+	    &cbvResourceDesc,
+	    D3D12_RESOURCE_STATE_GENERIC_READ,
+	    nullptr,
+	    IID_PPV_ARGS(&constantBuffer)
+	));
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC cBufferViewDesc = {
+	    .BufferLocation = constantBuffer->GetGPUVirtualAddress(),
+	    .SizeInBytes = CONSTANT_BUFFER_SIZE
+	};
+
+	device->CreateConstantBufferView(&cBufferViewDesc, cbvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+	XMStoreFloat4x4((XMFLOAT4X4 *)(&vsConstBuffer), XMMatrixIdentity());
+
+	D3D12_RANGE cBufferReadRange{0, 0};
+	ThrowIfFailed(constantBuffer->Map(0, &cBufferReadRange, (void **)(&pcBufferDataBegin)));
+	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
 
 	// Synchronization objects
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));

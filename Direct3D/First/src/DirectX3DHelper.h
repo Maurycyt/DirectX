@@ -29,6 +29,9 @@ class DirectX3DHelper {
 	ComPtr<ID3D12GraphicsCommandList> commandList{};
 	ComPtr<ID3D12Resource> vertexBuffer{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
+	ComPtr<ID3D12Resource> constantBuffer{};
+	UINT8 * pcBufferDataBegin{};
+	ComPtr<ID3D12DescriptorHeap> cbvDescriptorHeap{};
 	ComPtr<ID3D12Fence> fence{};
 	HANDLE fenceEvent{};
 	UINT64 fenceValue{};
@@ -45,6 +48,8 @@ class DirectX3DHelper {
 	void waitForPreviousFrame();
 
 	void populateCommandList();
+
+	void setWVPMatrix();
 public:
 
 	DirectX3DHelper();
