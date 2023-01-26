@@ -3,7 +3,7 @@
 namespace {
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	DirectX2DHelper d2DHelper;
+	DirectX3DHelper d3DHelper;
 } // namespace
 
 INT WINAPI wWinMain(
@@ -28,7 +28,7 @@ INT WINAPI wWinMain(
 	HWND hwnd = CreateWindowEx(
 	    0,                   // Optional window styles.
 	    CLASS_NAME,          // Window class
-	    L"Googly Eyes",      // Window text
+	    L"Direct3D",      // Window text
 	    WS_OVERLAPPEDWINDOW, // Window style
 
 	    // Size and position
@@ -47,7 +47,7 @@ INT WINAPI wWinMain(
 		return 0;
 	}
 
-	new (&d2DHelper) DirectX2DHelper(hwnd);
+	new (&d3DHelper) DirectX3DHelper(hwnd);
 	ShowWindow(hwnd, nCmdShow);
 
 	UINT_PTR IDT_TIMER1 = 1;
@@ -66,43 +66,31 @@ INT WINAPI wWinMain(
 
 namespace {
 	LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		static bool smile = false;
-		static D2D1_POINT_2F mousePosition;
+		try {
+			switch (uMsg) {
+			case WM_DESTROY:
+				PostQuitMessage(0);
+				return 0;
 
-		switch (uMsg) {
-		case WM_DESTROY:
-			PostQuitMessage(0);
-			return 0;
+			case WM_TIMER:
+				InvalidateRect(hwnd, nullptr, false);
+				return 0;
 
-		case WM_SIZE:
-			d2DHelper.reloadTarget(hwnd);
-			return 0;
+			case WM_MOUSEMOVE:
+				SetCursor(LoadCursor(nullptr, IDC_ARROW));
+				return 0;
 
-		case WM_TIMER:
-			InvalidateRect(hwnd, nullptr, false);
-			return 0;
+			case WM_PAINT: {
+				d3DHelper.draw();
+				ValidateRect(hwnd, nullptr);
+				return 0;
+			}
 
-		case WM_LBUTTONDOWN:
-			smile = true;
-			return 0;
-
-		case WM_LBUTTONUP:
-			smile = false;
-			return 0;
-
-		case WM_MOUSEMOVE:
-			SetCursor(LoadCursor(nullptr, IDC_HAND));
-			mousePosition = {float(GET_X_LPARAM(lParam)), float(GET_Y_LPARAM(lParam))};
-			smile = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
-			return 0;
-
-		case WM_PAINT: {
-			d2DHelper.draw(smile, mousePosition);
-			ValidateRect(hwnd, nullptr);
-			return 0;
-		}
-
-		default:
+			default:
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
+		} catch (std::exception & e) {
+			FatalAppExitA(0, e.what());
 			return DefWindowProc(hwnd, uMsg, wParam, lParam);
 		}
 	}
