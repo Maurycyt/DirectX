@@ -3,80 +3,58 @@
 #include "DirectXMath.h"
 #include "pixel_shader.h"
 #include "vertex_shader.h"
+#include <numbers>
 
 using namespace DirectX;
 
 namespace {
 	struct vertex_t {
 		FLOAT position[3];
+		FLOAT normal[3];
 		FLOAT color[4];
 	};
 
 	size_t const VERTEX_SIZE = sizeof(vertex_t);
 
-	vertex_t triangleVertices[] = {
-	    // Przód
-	    -1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
-	     1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
-	    -1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
+	size_t const NUM_DIRECTIONS = 4;
+	size_t const NUM_LEVELS = 3;
+	float const levelBoundaries[NUM_LEVELS + 1] = {-1.5, 0.5, 1.5, 2.0};
+	float const radii[NUM_LEVELS] = {1.0, 0.5, 0.25};
 
-	     1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
-	     1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
-	    -1.0f,-1.0f,-1.0f,  0.5f,0.5f,0.0f,1.0f,
+	vertex_t triangleVertices[2 * NUM_DIRECTIONS * NUM_LEVELS * 3] = {};
 
-	    // Prawa
-	    1.0f, 1.0f,-1.0f,   1.0f,0.5f,0.0f,1.0f,
-	    1.0f, 1.0f, 1.0f,   1.0f,0.5f,0.0f,1.0f,
-	    1.0f,-1.0f,-1.0f,   0.5f,0.0f,0.0f,1.0f,
+	void setTriangleVertices() {
+		for (size_t level = 0; level < NUM_LEVELS; level++) {
+			float bottom = levelBoundaries[level];
+			float top = levelBoundaries[level + 1];
+			float radius = radii[level];
+			for (size_t direction = 0; direction < NUM_DIRECTIONS; direction++) {
+				auto angle = float(direction * std::numbers::pi / 4);
+				float s = radius * sinf(angle), c = radius * cosf(angle);
+				size_t firstVertexIndex = level * NUM_DIRECTIONS * 2 * 3 + direction * 2 * 3;
+				triangleVertices[firstVertexIndex + 0] = {-c, bottom, -s, s, 0.0, -c, 0.0, 1.0, 0.0, 1.0};
+				triangleVertices[firstVertexIndex + 1] = {0.0, top, 0.0, s, 0.0, -c, 1.0, 1.0, 1.0, 1.0};
+				triangleVertices[firstVertexIndex + 2] = {c, bottom, s, s, 0.0, -c, 0.0, 1.0, 0.0, 1.0};
 
-	    1.0f, 1.0f, 1.0f,   1.0f,0.5f,0.0f,1.0f,
-	    1.0f,-1.0f, 1.0f,   0.5f,0.0f,0.0f,1.0f,
-	    1.0f,-1.0f,-1.0f,   0.5f,0.0f,0.0f,1.0f,
-
-	    // Tył
-	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
-	    -1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
-	    -1.0f,-1.0f, 1.0f,  0.0f,0.5f,0.0f,1.0f,
-
-	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
-	    -1.0f,-1.0f, 1.0f,  0.0f,0.5f,0.0f,1.0f,
-	     1.0f,-1.0f, 1.0f,  0.5f,0.5f,0.0f,1.0f,
-
-	    // Lewa
-	    -1.0f, 1.0f, 1.0f,  0.5f,0.0f,1.0f,1.0f,
-	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
-	    -1.0f,-1.0f, 1.0f,  0.0f,0.0f,0.5f,1.0f,
-
-	    -1.0f,-1.0f, 1.0f,  0.0f,0.0f,0.5f,1.0f,
-	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
-	    -1.0f,-1.0f,-1.0f,  0.0f,0.0f,0.5f,1.0f,
-
-	    // Góra
-	    -1.0f, 1.0f, 1.0f,  0.5f,0.5f,0.5f,1.0f,
-	     1.0f, 1.0f, 1.0f,  0.5f,1.0f,0.5f,1.0f,
-	    -1.0f, 1.0f,-1.0f,  0.5f,0.0f,1.0f,1.0f,
-
-	    -1.0f, 1.0f,-1.0f,  1.0f,1.0f,0.5f,1.0f,
-	     1.0f, 1.0f, 1.0f,  1.0f,0.5f,0.0f,1.0f,
-	     1.0f, 1.0f,-1.0f,  1.0f,0.75f,0.25f,1.0f,
-
-	    // Dół
-	    -1.0f,-1.0f,-1.0f,  1.0f,0.5f,1.0f,1.0f,
-	     1.0f,-1.0f,-1.0f,  0.5f,0.0f,0.5f,1.0f,
-	     1.0f,-1.0f, 1.0f,  1.0f,0.5f,1.0f,1.0f,
-
-	     1.0f,-1.0f, 1.0f,  1.0f,0.5f,1.0f,1.0f,
-	    -1.0f,-1.0f, 1.0f,  0.5f,0.0f,0.5f,1.0f,
-	    -1.0f,-1.0f,-1.0f,  1.0f,0.5f,1.0f,1.0f,
-	};
+				triangleVertices[firstVertexIndex + 3] = {c, bottom, s, -s, 0.0, c, 0.0, 1.0, 0.0, 1.0};
+				triangleVertices[firstVertexIndex + 4] = {0.0, top, 0.0, -s, 0.0, c, 1.0, 1.0, 1.0, 1.0};
+				triangleVertices[firstVertexIndex + 5] = {-c, bottom, -s, -s, 0.0, c, 0.0, 1.0, 0.0, 1.0};
+			}
+		}
+	}
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
 
-	size_t const NUM_VERTICES = VERTEX_BUFFER_SIZE / sizeof(vertex_t);
+	size_t const NUM_VERTICES = VERTEX_BUFFER_SIZE / VERTEX_SIZE;
 
 	struct vs_const_buffer_t {
 		XMFLOAT4X4 matWorldViewProj;
-		XMFLOAT4 padding[(256 - sizeof(XMFLOAT4X4)) / sizeof(XMFLOAT4)];
+		XMFLOAT4X4 matWorldView;
+		XMFLOAT4X4 matView;
+		XMFLOAT4 colMaterial;
+		XMFLOAT4 colLight;
+		XMFLOAT4 dirLight;
+		XMFLOAT4 padding;
 	};
 
 	vs_const_buffer_t vsConstBuffer;
@@ -102,6 +80,7 @@ DirectX3DHelper::DirectX3DHelper(HWND hwnd) : hwnd(hwnd) {
 	    .MinDepth = 0.0f,
 	    .MaxDepth = 1.0f};
 
+	setTriangleVertices();
 	loadPipeline();
 	loadAssets();
 }
@@ -156,15 +135,13 @@ void DirectX3DHelper::populateCommandList() {
 
 	D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	rtvHandle.ptr += frameIndex * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, &dsvHandle);
 
 	// Record commands.
-	float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-	if (GetTickCount64() / 1000 % 2) {
-		float newClearColor[] = {0.9f, 0.5f, 0.0f, 1.0f};
-		std::copy(newClearColor, newClearColor + 4, clearColor);
-	}
+	float clearColor[] = {0.7f, 0.6f, 1.0f, 1.0f};
 	commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
 	commandList->DrawInstanced(NUM_VERTICES, 1, 0, 0);
@@ -189,27 +166,30 @@ void DirectX3DHelper::populateCommandList() {
 void DirectX3DHelper::setWVPMatrix() {
 	static float angle = .0f;
 	angle += 1.f / 64;
-	XMMATRIX wvp_matrix = XMMatrixMultiply(
-	    XMMatrixRotationY(2.5f * angle),
-	    XMMatrixRotationX(static_cast<FLOAT>(sinf(angle)) / 2.0f)
-	);
-	wvp_matrix = XMMatrixMultiply(
-	    wvp_matrix,
-	    XMMatrixTranslation(0.0f, 0.0f, 4.0f)
-	);
-	wvp_matrix = XMMatrixMultiply(
-	    wvp_matrix,
-	    XMMatrixPerspectiveFovLH(
-	        45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f
-	    )
-	);
-	wvp_matrix = XMMatrixTranspose(wvp_matrix);
+
+	XMMATRIX wMatrix = XMMatrixRotationY(angle);
+	XMMATRIX vMatrix = XMMatrixTranslation(0.0f, 0.0f, 4.0f);
+	XMMATRIX pMatrix = XMMatrixPerspectiveFovLH(
+      45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f
+  );
+	XMMATRIX wvMatrix = XMMatrixMultiply(wMatrix, vMatrix);
+	XMMATRIX wvpMatrix = XMMatrixMultiply(wvMatrix, pMatrix);
 	XMStoreFloat4x4(
 	    &vsConstBuffer.matWorldViewProj,
-	    wvp_matrix
+	    XMMatrixTranspose(wvpMatrix)
 	);
-	memcpy(
-	    pcBufferDataBegin,
+	XMStoreFloat4x4(
+	    &vsConstBuffer.matWorldView,
+	    XMMatrixTranspose(wvMatrix)
+	);
+	XMStoreFloat4x4(
+	    &vsConstBuffer.matView,
+	    XMMatrixTranspose(vMatrix)
+	);
+	vsConstBuffer.colMaterial = {1.0, 0.4, 1.0, 1.0}; // pink leaves
+	vsConstBuffer.colLight = {1.0, 1.0, 1.0, 1.0}; // white light
+	vsConstBuffer.dirLight = {0.0, 0.0, 1.0, 0.0};
+	memcpy(pcBufferDataBegin,
 	    &vsConstBuffer,
 	    CONSTANT_BUFFER_SIZE
 	);
@@ -234,7 +214,6 @@ void DirectX3DHelper::loadPipeline() {
 	D3D12GetDebugInterface(IID_PPV_ARGS(&debug_controller));
 	debug_controller->EnableDebugLayer();
 	dxgi_factory_flag |= DXGI_CREATE_FACTORY_DEBUG;
-
 
 	// Factory and device
 	ThrowIfFailed(CreateDXGIFactory2(dxgi_factory_flag, IID_PPV_ARGS(&factory)));
@@ -265,20 +244,29 @@ void DirectX3DHelper::loadPipeline() {
 	frameIndex = swapChain->GetCurrentBackBufferIndex();
 
 	// Vertex buffer descriptor heap
-	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc{
-	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV, .NumDescriptors = frameCount, .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE};
-	ThrowIfFailed(device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap)));
+	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{
+	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
+	    .NumDescriptors = frameCount,
+	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE};
+	ThrowIfFailed(device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap)));
 	rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	// Constant buffer descriptor heap
-	D3D12_DESCRIPTOR_HEAP_DESC cbvDescriptorHeapDesc {
+	D3D12_DESCRIPTOR_HEAP_DESC cbvDescriptorHeapDesc{
 	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 	    .NumDescriptors = 1,
 	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-	    .NodeMask = 0
-	};
+	    .NodeMask = 0};
 
 	device->CreateDescriptorHeap(&cbvDescriptorHeapDesc, IID_PPV_ARGS(&cbvDescriptorHeap));
+
+	// Depth buffer descriptor heap
+	D3D12_DESCRIPTOR_HEAP_DESC dsvDescriptorHeapDesc{
+	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV,
+	    .NumDescriptors = 1,
+	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE,
+	    .NodeMask = 0};
+	device->CreateDescriptorHeap(&dsvDescriptorHeapDesc, IID_PPV_ARGS(&dsvDescriptorHeap));
 
 	// Frame resources
 	D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptorHandle(rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
@@ -325,11 +313,15 @@ void DirectX3DHelper::loadAssets() {
 	));
 
 	// Pipeline state
-	ComPtr<ID3DBlob> vertexShader{};
-	ComPtr<ID3DBlob> pixelShader{};
-
 	D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
 	    {.SemanticName = "POSITION",
+	     .SemanticIndex = 0,
+	     .Format = DXGI_FORMAT_R32G32B32_FLOAT,
+	     .InputSlot = 0,
+	     .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+	     .InstanceDataStepRate = 0},
+	    {.SemanticName = "NORMAL",
 	     .SemanticIndex = 0,
 	     .Format = DXGI_FORMAT_R32G32B32_FLOAT,
 	     .InputSlot = 0,
@@ -377,13 +369,31 @@ void DirectX3DHelper::loadAssets() {
 	            .AntialiasedLineEnable = FALSE,
 	            .ForcedSampleCount = 0,
 	            .ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF},
+	    .DepthStencilState = {
+	        .DepthEnable = TRUE,
+	        .DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL,
+	        .DepthFunc = D3D12_COMPARISON_FUNC_LESS,
+	        .StencilEnable = FALSE,
+	        .StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK,
+	        .StencilWriteMask = D3D12_DEFAULT_STENCIL_READ_MASK,
+	        .FrontFace = {
+	            .StencilFailOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilPassOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS},
+	        .BackFace = {
+	            .StencilFailOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilPassOp = D3D12_STENCIL_OP_KEEP,
+	            .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS
+	        }},
 	    .InputLayout = {inputElementDescs, _countof(inputElementDescs)},
 	    .IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED,
 	    .PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
 	    .NumRenderTargets = 1,
 	    .RTVFormats = {DXGI_FORMAT_R8G8B8A8_UNORM},
-	    .SampleDesc = {.Count = 1, .Quality = 0},
-	};
+	    .DSVFormat = DXGI_FORMAT_D32_FLOAT,
+	    .SampleDesc = {.Count = 1, .Quality = 0}};
 
 	ThrowIfFailed(device->CreateGraphicsPipelineState(&pipelineStateDesc, IID_PPV_ARGS(&pipelineState)));
 
@@ -402,7 +412,7 @@ void DirectX3DHelper::loadAssets() {
 	    .CreationNodeMask = 1,
 	    .VisibleNodeMask = 1};
 
-	D3D12_RESOURCE_DESC rtvResourceDesc = {
+	D3D12_RESOURCE_DESC rtvResourceDesc{
 	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 	    .Alignment = 0,
 	    .Width = VERTEX_BUFFER_SIZE,
@@ -423,9 +433,9 @@ void DirectX3DHelper::loadAssets() {
 	    IID_PPV_ARGS(&vertexBuffer)
 	));
 
-	UINT8 * pVertexDataBegin;
+	void * pVertexDataBegin;
 	D3D12_RANGE vertexDataReadRange{0, 0};
-	ThrowIfFailed(vertexBuffer->Map(0, &vertexDataReadRange, (void **)(&pVertexDataBegin)));
+	ThrowIfFailed(vertexBuffer->Map(0, &vertexDataReadRange, &pVertexDataBegin));
 	memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
 	vertexBuffer->Unmap(0, nullptr);
 
@@ -443,7 +453,7 @@ void DirectX3DHelper::loadAssets() {
 	    .CreationNodeMask = 1,
 	    .VisibleNodeMask = 1};
 
-	D3D12_RESOURCE_DESC cbvResourceDesc = {
+	D3D12_RESOURCE_DESC cbvResourceDesc{
 	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
 	    .Alignment = 0,
 	    .Width = CONSTANT_BUFFER_SIZE,
@@ -464,18 +474,57 @@ void DirectX3DHelper::loadAssets() {
 	    IID_PPV_ARGS(&constantBuffer)
 	));
 
-	D3D12_CONSTANT_BUFFER_VIEW_DESC cBufferViewDesc = {
-	    .BufferLocation = constantBuffer->GetGPUVirtualAddress(),
-	    .SizeInBytes = CONSTANT_BUFFER_SIZE
-	};
+	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {
+	    .BufferLocation = constantBuffer->GetGPUVirtualAddress(), .SizeInBytes = CONSTANT_BUFFER_SIZE};
 
-	device->CreateConstantBufferView(&cBufferViewDesc, cbvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	device->CreateConstantBufferView(&cbvDesc, cbvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 	XMStoreFloat4x4((XMFLOAT4X4 *)(&vsConstBuffer), XMMatrixIdentity());
 
 	D3D12_RANGE cBufferReadRange{0, 0};
-	ThrowIfFailed(constantBuffer->Map(0, &cBufferReadRange, (void **)(&pcBufferDataBegin)));
+	ThrowIfFailed(constantBuffer->Map(0, &cBufferReadRange, &pcBufferDataBegin));
 	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
+
+	// Depth buffer
+	D3D12_HEAP_PROPERTIES dsvHeapProperties{
+	    .Type = D3D12_HEAP_TYPE_DEFAULT,
+	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+	    .CreationNodeMask = 1,
+	    .VisibleNodeMask = 1};
+
+	D3D12_RESOURCE_DESC dsvResourceDesc{
+	    .Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+	    .Alignment = 0,
+	    .Width = UINT64(scissorRect.right),
+	    .Height = UINT(scissorRect.bottom),
+	    .DepthOrArraySize = 1,
+	    .MipLevels = 0,
+	    .Format = DXGI_FORMAT_D32_FLOAT,
+	    .SampleDesc = {.Count = 1, .Quality = 0 },
+	    .Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+	    .Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL};
+
+	D3D12_CLEAR_VALUE dsvClearValue{
+	    .Format = DXGI_FORMAT_D32_FLOAT,
+	    .DepthStencil = { .Depth = 1.0f, .Stencil = 0 }};
+
+	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{
+	    .Format = DXGI_FORMAT_D32_FLOAT,
+	    .ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D,
+	    .Flags = D3D12_DSV_FLAG_NONE,
+	    .Texture2D = {}};
+
+	ThrowIfFailed(device->CreateCommittedResource(
+	    &dsvHeapProperties,
+	    D3D12_HEAP_FLAG_NONE,
+	    &dsvResourceDesc,
+	    D3D12_RESOURCE_STATE_DEPTH_WRITE,
+	    &dsvClearValue,
+	    IID_PPV_ARGS(&depthBuffer)
+	));
+
+	device->CreateDepthStencilView(depthBuffer.Get(), &dsvDesc, dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 
 	// Synchronization objects
 	ThrowIfFailed(device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence)));

@@ -1,9 +1,10 @@
-# Projekty na JNP3, grafika Windowsowa
+# Projects in Windows Graphics
 
-## Spis projektów:
+## Project list
 
-Projekty z zajęć
-
-- Projekt 1 : BouncingBalls
-- Projekt 2 : RotatingNet
-
+1. BouncingBalls
+2. RotatingNet
+3. GooglyEyes
+4. Clock
+5. **AsteroiDoom**
+6. Tree
