@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.8)
 
-set(PROJECT_NAME "DirectX3DFirst")
+set(PROJECT_NAME "Tree")
 
 project(${PROJECT_NAME})
 

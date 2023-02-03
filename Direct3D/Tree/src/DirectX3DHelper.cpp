@@ -44,8 +44,14 @@ namespace {
 	}
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
-
 	size_t const NUM_VERTICES = VERTEX_BUFFER_SIZE / VERTEX_SIZE;
+
+	size_t const TREE_INSTANCES = 3;
+	size_t const FLAKE_INSTANCES = 10'000;
+
+	XMFLOAT4X4 instances[TREE_INSTANCES + FLAKE_INSTANCES];
+
+	size_t const INSTANCE_BUFFER_SIZE = sizeof(instances);
 
 	struct vs_const_buffer_t {
 		XMFLOAT4X4 matWorldViewProj;
@@ -144,6 +150,7 @@ void DirectX3DHelper::populateCommandList() {
 	commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 	commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	commandList->IASetVertexBuffers(0, 1, &vertexBufferView);
+	commandList->IASetVertexBuffers(1, 1, &instanceBufferView);
 	commandList->DrawInstanced(NUM_VERTICES, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.
@@ -443,6 +450,51 @@ void DirectX3DHelper::loadAssets() {
 	    .BufferLocation = vertexBuffer->GetGPUVirtualAddress(),
 	    .SizeInBytes = VERTEX_BUFFER_SIZE,
 	    .StrideInBytes = VERTEX_SIZE,
+	};
+
+	// Instance buffer
+	D3D12_HEAP_PROPERTIES instanceHeapProperties = {
+	    .Type = D3D12_HEAP_TYPE_UPLOAD,
+	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+	    .CreationNodeMask = 1,
+	    .VisibleNodeMask = 1
+	};
+
+	D3D12_RESOURCE_DESC resource_desc = {
+	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+	    .Alignment = 0,
+	    .Width = INSTANCE_BUFFER_SIZE,
+	    .Height = 1,
+	    .DepthOrArraySize = 1,
+	    .MipLevels = 1,
+	    .Format = DXGI_FORMAT_UNKNOWN,
+	    .SampleDesc = {.Count = 1, .Quality = 0 },
+	    .Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+	    .Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+
+	device->CreateCommittedResource(
+	    &instanceHeapProperties,
+	    D3D12_HEAP_FLAG_NONE,
+	    &resource_desc,
+	    D3D12_RESOURCE_STATE_GENERIC_READ,
+	    nullptr,
+	    IID_PPV_ARGS(&instanceBuffer)
+	);
+
+	void * pInstanceDataBegin;
+	D3D12_RANGE readRange = { 0, 0 };
+	instanceBuffer->Map(
+	    0, &readRange, (void **)(&pInstanceDataBegin)
+	);
+	memcpy(pInstanceDataBegin, instances, INSTANCE_BUFFER_SIZE);
+	instanceBuffer->Unmap(0, nullptr);
+
+	instanceBufferView = {
+		.BufferLocation = instanceBuffer->GetGPUVirtualAddress(),
+		.SizeInBytes = INSTANCE_BUFFER_SIZE,
+		.StrideInBytes = sizeof(XMFLOAT4X4)
 	};
 
 	// Constant buffer
