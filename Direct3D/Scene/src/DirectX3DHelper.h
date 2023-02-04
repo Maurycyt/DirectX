@@ -33,6 +33,8 @@ class DirectX3DHelper {
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	ComPtr<ID3D12Resource> constantBuffer{};
 	void * pcBufferDataBegin{};
+	ComPtr<ID3D12Resource> textureBuffer{};
+	ComPtr<ID3D12Resource> textureUploadBuffer{};
 	ComPtr<ID3D12Resource> depthBuffer{};
 	ComPtr<ID3D12DescriptorHeap> cbvDescriptorHeap{};
 	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap{};
