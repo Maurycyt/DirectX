@@ -3,6 +3,7 @@
 #include "DirectXMath.h"
 #include "pixel_shader.h"
 #include "vertex_shader.h"
+
 #include <numbers>
 
 using namespace DirectX;
@@ -19,40 +20,40 @@ namespace {
 
 	vertex_t triangleVertices[24] = {
 	    // Front 1, blue
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,1.0,
-	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,0.0,
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
 
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,0.0,
-	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,1.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
 
 	    // Back 1, orange
-	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,0.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,0.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
 
-	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,0.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,1.0,
+	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
 
 	    // Front 2, green
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,0.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,1.0,
-	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
 
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,0.0,
-	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
 
 	    // Back 2, red
-	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,1.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,0.0,
+	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
 
-	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,0.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,0.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,1.0
+	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0
 	};
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
@@ -78,6 +79,10 @@ namespace {
 	vs_const_buffer_t vsConstBuffer;
 
 	size_t const CONSTANT_BUFFER_SIZE = sizeof(vsConstBuffer);
+
+	UINT const bmpPixelSize{4};
+	UINT bmpWidth{}, bmpHeight{};
+	BYTE * bmpBytes{};
 } // namespace
 
 DirectX3DHelper::DirectX3DHelper() = default;
@@ -131,7 +136,10 @@ void DirectX3DHelper::populateCommandList() {
 
 	ID3D12DescriptorHeap * descriptorHeaps[] = {cbvDescriptorHeap.Get()};
 	commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-	commandList->SetGraphicsRootDescriptorTable(0, cbvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuDescHandle = cbvDescriptorHeap-> GetGPUDescriptorHandleForHeapStart();
+	commandList->SetGraphicsRootDescriptorTable(0, gpuDescHandle);
+	gpuDescHandle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	commandList->SetGraphicsRootDescriptorTable(1, gpuDescHandle);
 
 	commandList->RSSetViewports(1, &viewport);
 	commandList->RSSetScissorRects(1, &scissorRect);
@@ -186,30 +194,16 @@ void DirectX3DHelper::setWVPMatrix() {
 
 	XMMATRIX wMatrix = XMMatrixRotationY(angle);
 	XMMATRIX vMatrix = XMMatrixTranslation(0.0f, 0.0f, 4.0f);
-	XMMATRIX pMatrix = XMMatrixPerspectiveFovLH(
-      45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f
-  );
+	XMMATRIX pMatrix = XMMatrixPerspectiveFovLH(45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f);
 	XMMATRIX wvMatrix = XMMatrixMultiply(wMatrix, vMatrix);
 	XMMATRIX wvpMatrix = XMMatrixMultiply(wvMatrix, pMatrix);
-	XMStoreFloat4x4(
-	    &vsConstBuffer.matWorldViewProj,
-	    XMMatrixTranspose(wvpMatrix)
-	);
-	XMStoreFloat4x4(
-	    &vsConstBuffer.matWorldView,
-	    XMMatrixTranspose(wvMatrix)
-	);
-	XMStoreFloat4x4(
-	    &vsConstBuffer.matView,
-	    XMMatrixTranspose(vMatrix)
-	);
+	XMStoreFloat4x4(&vsConstBuffer.matWorldViewProj, XMMatrixTranspose(wvpMatrix));
+	XMStoreFloat4x4(&vsConstBuffer.matWorldView, XMMatrixTranspose(wvMatrix));
+	XMStoreFloat4x4(&vsConstBuffer.matView, XMMatrixTranspose(vMatrix));
 	vsConstBuffer.colMaterial = {1.0, 0.4, 1.0, 1.0}; // pink leaves
-	vsConstBuffer.colLight = {1.0, 1.0, 1.0, 1.0}; // white light
+	vsConstBuffer.colLight = {1.0, 1.0, 1.0, 1.0};    // white light
 	vsConstBuffer.dirLight = {0.0, 0.0, 1.0, 0.0};
-	memcpy(pcBufferDataBegin,
-	    &vsConstBuffer,
-	    CONSTANT_BUFFER_SIZE
-	);
+	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
 }
 
 void DirectX3DHelper::draw() {
@@ -237,10 +231,8 @@ void DirectX3DHelper::loadPipeline() {
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device)));
 
 	// WIC Imaging Factory
-
-		ThrowIfFailed(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED));
-	  ThrowIfFailed(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&WICFactory)));
-
+	ThrowIfFailed(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED));
+	ThrowIfFailed(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&WICFactory)));
 
 	// Command queue
 	D3D12_COMMAND_QUEUE_DESC queueDesc{.Type = D3D12_COMMAND_LIST_TYPE_DIRECT, .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE};
@@ -268,19 +260,16 @@ void DirectX3DHelper::loadPipeline() {
 
 	// Vertex buffer descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc{
-	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV,
-	    .NumDescriptors = frameCount,
-	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE};
+	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV, .NumDescriptors = frameCount, .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE};
 	ThrowIfFailed(device->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap)));
 	rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
 	// Constant buffer descriptor heap
 	D3D12_DESCRIPTOR_HEAP_DESC cbvDescriptorHeapDesc{
 	    .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-	    .NumDescriptors = 1,
+	    .NumDescriptors = 2,
 	    .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
 	    .NodeMask = 0};
-
 	device->CreateDescriptorHeap(&cbvDescriptorHeapDesc, IID_PPV_ARGS(&cbvDescriptorHeap));
 
 	// Depth buffer descriptor heap
@@ -304,29 +293,55 @@ void DirectX3DHelper::loadPipeline() {
 }
 
 void DirectX3DHelper::loadAssets() {
-	// Root signature with constant buffer
-	D3D12_DESCRIPTOR_RANGE descriptorRange{
-	    .RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
-	    .NumDescriptors = 1,
-	    .BaseShaderRegister = 0,
-	    .RegisterSpace = 0,
-	    .OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND};
+	// Bitmap
+	loadBitmapFromFile(TEXT("../assets/TestAsset.png"), bmpWidth, bmpHeight, &bmpBytes);
 
-	D3D12_ROOT_PARAMETER rootParameters[] = {D3D12_ROOT_PARAMETER{
-	    .ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
-	    .DescriptorTable = {1, &descriptorRange},
-	    .ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX}};
+	// Root signature with constant buffer
+	D3D12_DESCRIPTOR_RANGE descriptorRanges[] = {
+	    {.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV,
+	     .NumDescriptors = 1,
+	     .BaseShaderRegister = 0,
+	     .RegisterSpace = 0,
+	     .OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND},
+	    {.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV,
+	     .NumDescriptors = 1,
+	     .BaseShaderRegister = 0,
+	     .RegisterSpace = 0,
+	     .OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND}};
+
+	D3D12_ROOT_PARAMETER rootParameters[] = {
+	    {.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+	     .DescriptorTable = {1, &descriptorRanges[0]},
+	     .ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX},
+	    {.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE,
+	     .DescriptorTable = {1, &descriptorRanges[1]},
+	     .ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL}};
+
+	D3D12_STATIC_SAMPLER_DESC textureSamplerDesc = {
+	    .Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR, //D3D12_FILTER_MIN_MAG_MIP_POINT, D3D12_FILTER_ANISOTROPIC
+	    .AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP, //_MODE_MIRROR, _MODE_CLAMP, _MODE_BORDER
+	    .AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+	    .AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP,
+	    .MipLODBias = 0,
+	    .MaxAnisotropy = 0,
+	    .ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER,
+	    .BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK,
+	    .MinLOD = 0.0f,
+	    .MaxLOD = D3D12_FLOAT32_MAX,
+	    .ShaderRegister = 0,
+	    .RegisterSpace = 0,
+	    .ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL
+	};
 
 	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc{
 	    .NumParameters = _countof(rootParameters),
 	    .pParameters = rootParameters,
-	    .NumStaticSamplers = 0,
-	    .pStaticSamplers = nullptr,
+	    .NumStaticSamplers = 1,
+	    .pStaticSamplers = &textureSamplerDesc,
 	    .Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 	             D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 	             D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-	             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-	             D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS};
+	             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS};
 
 	ComPtr<ID3DBlob> signature{};
 	ComPtr<ID3DBlob> error{};
@@ -359,12 +374,12 @@ void DirectX3DHelper::loadAssets() {
 	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
 	     .InstanceDataStepRate = 0},
 	    {.SemanticName = "TEXCOORD",
-        .SemanticIndex = 0,
-        .Format = DXGI_FORMAT_R32G32_FLOAT,
-        .InputSlot = 0,
-        .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
-        .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-        .InstanceDataStepRate = 0}};
+	     .SemanticIndex = 0,
+	     .Format = DXGI_FORMAT_R32G32_FLOAT,
+	     .InputSlot = 0,
+	     .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+	     .InstanceDataStepRate = 0}};
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc{
 	    .pRootSignature = rootSignature.Get(),
@@ -399,24 +414,23 @@ void DirectX3DHelper::loadAssets() {
 	            .AntialiasedLineEnable = FALSE,
 	            .ForcedSampleCount = 0,
 	            .ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF},
-	    .DepthStencilState = {
-	        .DepthEnable = TRUE,
-	        .DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL,
-	        .DepthFunc = D3D12_COMPARISON_FUNC_LESS,
-	        .StencilEnable = FALSE,
-	        .StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK,
-	        .StencilWriteMask = D3D12_DEFAULT_STENCIL_READ_MASK,
-	        .FrontFace = {
-	            .StencilFailOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilPassOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS},
-	        .BackFace = {
-	            .StencilFailOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilPassOp = D3D12_STENCIL_OP_KEEP,
-	            .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS
-	        }},
+	    .DepthStencilState =
+	        {.DepthEnable = TRUE,
+	         .DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL,
+	         .DepthFunc = D3D12_COMPARISON_FUNC_LESS,
+	         .StencilEnable = FALSE,
+	         .StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK,
+	         .StencilWriteMask = D3D12_DEFAULT_STENCIL_READ_MASK,
+	         .FrontFace =
+	             {.StencilFailOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilPassOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS},
+	         .BackFace =
+	             {.StencilFailOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilDepthFailOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilPassOp = D3D12_STENCIL_OP_KEEP,
+	              .StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS}},
 	    .InputLayout = {inputElementDescs, _countof(inputElementDescs)},
 	    .IBStripCutValue = D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED,
 	    .PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
@@ -515,6 +529,162 @@ void DirectX3DHelper::loadAssets() {
 	ThrowIfFailed(constantBuffer->Map(0, &cBufferReadRange, &pcBufferDataBegin));
 	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
 
+	// Texture buffer
+	D3D12_HEAP_PROPERTIES texHeapProperties = {
+	    .Type = D3D12_HEAP_TYPE_DEFAULT,
+	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+	    .CreationNodeMask = 1,
+	    .VisibleNodeMask = 1
+	};
+
+	D3D12_RESOURCE_DESC texResourceDesc = {
+	    .Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D,
+	    .Alignment = 0,
+	    .Width = bmpWidth,
+	    .Height = bmpHeight,
+	    .DepthOrArraySize = 1,
+	    .MipLevels = 1,
+	    .Format = DXGI_FORMAT_R8G8B8A8_UNORM,
+	    .SampleDesc = {.Count = 1, .Quality = 0 },
+	    .Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
+	    .Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+
+	device->CreateCommittedResource(
+	    &texHeapProperties, D3D12_HEAP_FLAG_NONE,
+	    &texResourceDesc, D3D12_RESOURCE_STATE_COPY_DEST,
+	    nullptr, IID_PPV_ARGS(&textureBuffer)
+	);
+
+	ComPtr<ID3D12Resource> texUploadBuffer{};
+	UINT64 requiredSize = 0;
+	auto Desc = textureBuffer->GetDesc();
+	ComPtr<ID3D12Device> pDevice{};
+	textureBuffer->GetDevice(__uuidof(*pDevice.Get()), (void **)(&pDevice));
+	pDevice->GetCopyableFootprints(&Desc, 0, 1, 0, nullptr, nullptr, nullptr, &requiredSize);
+	pDevice->Release();
+	pDevice = nullptr;
+
+	D3D12_HEAP_PROPERTIES texUploadHeapProperties = {
+	    .Type = D3D12_HEAP_TYPE_UPLOAD,
+	    .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
+	    .MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN,
+	    .CreationNodeMask = 1,
+	    .VisibleNodeMask = 1
+	};
+
+	D3D12_RESOURCE_DESC texUploadResourceDesc = {
+	    .Dimension = D3D12_RESOURCE_DIMENSION_BUFFER,
+	    .Alignment = 0,
+	    .Width = requiredSize,
+	    .Height = 1,
+	    .DepthOrArraySize = 1,
+	    .MipLevels = 1,
+	    .Format = DXGI_FORMAT_UNKNOWN,
+	    .SampleDesc = {.Count = 1, .Quality = 0 },
+	    .Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR,
+	    .Flags = D3D12_RESOURCE_FLAG_NONE
+	};
+
+	device->CreateCommittedResource(
+	    &texUploadHeapProperties, D3D12_HEAP_FLAG_NONE,
+	    &texUploadResourceDesc,
+	    D3D12_RESOURCE_STATE_GENERIC_READ,
+	    nullptr, IID_PPV_ARGS(&textureUploadBuffer)
+	);
+
+	D3D12_SUBRESOURCE_DATA texture_data = {
+	    .pData = bmpBytes,
+	    .RowPitch = LONG_PTR(bmpWidth * bmpPixelSize),
+	    .SlicePitch = LONG_PTR(bmpWidth * bmpHeight * bmpPixelSize)
+	};
+
+	ThrowIfFailed(commandList->Reset(commandAllocator.Get(), pipelineState.Get()));
+
+	UINT const MAX_SUBRESOURCES = 1;
+	requiredSize = 0;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT Layouts[MAX_SUBRESOURCES];
+	UINT NumRows[MAX_SUBRESOURCES];
+	UINT64 RowSizesInBytes[MAX_SUBRESOURCES];
+
+	Desc = textureBuffer->GetDesc();
+	textureBuffer->GetDevice(__uuidof(*pDevice.Get()), (void **)(&pDevice));
+	pDevice->GetCopyableFootprints(
+	    &Desc, 0, 1, 0, Layouts, NumRows,
+	    RowSizesInBytes, &requiredSize
+	);
+	pDevice->Release();
+	pDevice = nullptr;
+
+	BYTE* mapTexData = nullptr;
+	textureUploadBuffer->Map(0, nullptr, (void **)(&mapTexData));
+
+	D3D12_MEMCPY_DEST DestData = {
+	    .pData = mapTexData + Layouts[0].Offset,
+	    .RowPitch = Layouts[0].Footprint.RowPitch,
+	    .SlicePitch = SIZE_T(Layouts[0].Footprint.RowPitch) * SIZE_T(NumRows[0])
+	};
+
+	for (UINT z = 0; z < Layouts[0].Footprint.Depth; ++z) {
+		auto pDestSlice = (UINT8 *)(DestData.pData) + DestData.SlicePitch * z;
+		auto pSrcSlice = (const UINT8 *)(texture_data.pData) + texture_data.SlicePitch * LONG_PTR(z);
+		for (UINT y = 0; y < NumRows[0]; ++y) {
+			memcpy(
+			    pDestSlice + DestData.RowPitch * y,
+			    pSrcSlice + texture_data.RowPitch * LONG_PTR(y),
+			    SIZE_T(RowSizesInBytes[0])
+			);
+		}
+	}
+
+	textureUploadBuffer->Unmap(0, nullptr);
+
+	D3D12_TEXTURE_COPY_LOCATION Dst = {
+	    .pResource = textureBuffer.Get(),
+	    .Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
+	    .SubresourceIndex = 0
+	};
+
+	D3D12_TEXTURE_COPY_LOCATION Src = {
+	    .pResource = textureUploadBuffer.Get(),
+	    .Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT,
+	    .PlacedFootprint = Layouts[0]
+	};
+
+	commandList->CopyTextureRegion(&Dst, 0, 0, 0, &Src, nullptr);
+	D3D12_RESOURCE_BARRIER texUploadResourceBarrier = {
+	    .Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION,
+	    .Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE,
+	    .Transition = {
+	        .pResource = textureBuffer.Get(),
+	        .Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
+	        .StateBefore = D3D12_RESOURCE_STATE_COPY_DEST,
+	        .StateAfter =
+	            D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE },
+	};
+	commandList->ResourceBarrier(1, &texUploadResourceBarrier);
+	commandList->Close();
+	ID3D12CommandList * pCmdList = commandList.Get();
+	commandQueue->ExecuteCommandLists(1, &pCmdList);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {
+	    .Format = texResourceDesc.Format,
+	    .ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D,
+	    .Shader4ComponentMapping =
+	        D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
+	    .Texture2D = {
+	        .MostDetailedMip = 0,
+	        .MipLevels = 1,
+	        .PlaneSlice = 0,
+	        .ResourceMinLODClamp = 0.0f
+	    },
+	};
+
+	D3D12_CPU_DESCRIPTOR_HANDLE texCPUDescHandle = cbvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	texCPUDescHandle.ptr += device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	device->CreateShaderResourceView(textureBuffer.Get(), &srvDesc, texCPUDescHandle);
+
 	// Depth buffer
 	D3D12_HEAP_PROPERTIES dsvHeapProperties{
 	    .Type = D3D12_HEAP_TYPE_DEFAULT,
@@ -531,13 +701,11 @@ void DirectX3DHelper::loadAssets() {
 	    .DepthOrArraySize = 1,
 	    .MipLevels = 0,
 	    .Format = DXGI_FORMAT_D32_FLOAT,
-	    .SampleDesc = {.Count = 1, .Quality = 0 },
+	    .SampleDesc = {.Count = 1, .Quality = 0},
 	    .Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN,
 	    .Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL};
 
-	D3D12_CLEAR_VALUE dsvClearValue{
-	    .Format = DXGI_FORMAT_D32_FLOAT,
-	    .DepthStencil = { .Depth = 1.0f, .Stencil = 0 }};
+	D3D12_CLEAR_VALUE dsvClearValue{.Format = DXGI_FORMAT_D32_FLOAT, .DepthStencil = {.Depth = 1.0f, .Stencil = 0}};
 
 	D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{
 	    .Format = DXGI_FORMAT_D32_FLOAT,
@@ -571,6 +739,7 @@ void DirectX3DHelper::loadAssets() {
 DirectX3DHelper::~DirectX3DHelper() {
 	waitForPreviousFrame();
 	CloseHandle(fenceEvent);
+	delete [] bmpBytes;
 }
 
 void DirectX3DHelper::loadBitmapFromFile(PCWSTR uri, UINT & width, UINT & height, BYTE ** ppBits) {
@@ -578,20 +747,14 @@ void DirectX3DHelper::loadBitmapFromFile(PCWSTR uri, UINT & width, UINT & height
 	ComPtr<IWICBitmapFrameDecode> pSource{};
 	ComPtr<IWICFormatConverter> pConverter{};
 
-	ThrowIfFailed(WICFactory->CreateDecoderFromFilename(
-	    uri, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad,
-	    &pDecoder
-	));
+	ThrowIfFailed(
+	    WICFactory->CreateDecoderFromFilename(uri, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad, &pDecoder)
+	);
 	ThrowIfFailed(pDecoder->GetFrame(0, &pSource));
 	ThrowIfFailed(WICFactory->CreateFormatConverter(&pConverter));
 	ThrowIfFailed(pConverter->Initialize(
-		    pSource.Get(),
-		    GUID_WICPixelFormat32bppRGBA,
-		    WICBitmapDitherTypeNone,
-		    nullptr,
-		    0.0f,
-		    WICBitmapPaletteTypeMedianCut
-		));
+	    pSource.Get(), GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone, nullptr, 0.0f, WICBitmapPaletteTypeMedianCut
+	));
 	ThrowIfFailed(pConverter->GetSize(&width, &height));
 	*ppBits = new BYTE[4 * width * height];
 	ThrowIfFailed(pConverter->CopyPixels(nullptr, 4 * width, 4 * width * height, *ppBits));
