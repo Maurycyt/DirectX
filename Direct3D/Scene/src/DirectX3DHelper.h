@@ -4,6 +4,7 @@
 #include <dxgi1_6.h>
 #include <string>
 #include <wrl.h>
+#include <wincodec.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -15,6 +16,7 @@ class DirectX3DHelper {
 	static const unsigned int frameCount = 2;
 	ComPtr<ID3D12Device> device{};
 	ComPtr<IDXGIFactory7> factory{};
+	ComPtr<IWICImagingFactory> WICFactory{};
 	ComPtr<ID3D12CommandQueue> commandQueue{};
 	ComPtr<IDXGISwapChain3> swapChain{};
 	unsigned int frameIndex{};
@@ -52,6 +54,8 @@ class DirectX3DHelper {
 	void populateCommandList();
 
 	void setWVPMatrix();
+
+	void loadBitmapFromFile(PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits);
 public:
 
 	DirectX3DHelper();

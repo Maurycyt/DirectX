@@ -12,46 +12,47 @@ namespace {
 		FLOAT position[3];
 		FLOAT normal[3];
 		FLOAT color[4];
+		FLOAT tex_coord[2];
 	};
 
 	size_t const VERTEX_SIZE = sizeof(vertex_t);
 
 	vertex_t triangleVertices[24] = {
 	    // Front 1, blue
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
-	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,1.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,0.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,0.0,
 
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
-	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,0.0,
+	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 1.0,1.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,0.0,1.0,1.0, 0.0,1.0,
 
 	    // Back 1, orange
-	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,0.0,
 
-	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0,
+	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 0.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,0.5,0.0,1.0, 1.0,1.0,
 
 	    // Front 2, green
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
-	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,1.0,
+	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,1.0,
 
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
-	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 0.0,0.0,
+	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,1.0,0.0,1.0, 1.0,0.0,
 
 	    // Back 2, red
-	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
+	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,1.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,0.0,
 
-	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0,
+	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,0.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 1.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,0.0,0.0,1.0, 0.0,1.0
 	};
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
@@ -235,6 +236,12 @@ void DirectX3DHelper::loadPipeline() {
 	ThrowIfFailed(CreateDXGIFactory2(dxgi_factory_flag, IID_PPV_ARGS(&factory)));
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device)));
 
+	// WIC Imaging Factory
+
+		ThrowIfFailed(CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED));
+	  ThrowIfFailed(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&WICFactory)));
+
+
 	// Command queue
 	D3D12_COMMAND_QUEUE_DESC queueDesc{.Type = D3D12_COMMAND_LIST_TYPE_DIRECT, .Flags = D3D12_COMMAND_QUEUE_FLAG_NONE};
 	ThrowIfFailed(device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue)));
@@ -350,7 +357,14 @@ void DirectX3DHelper::loadAssets() {
 	     .InputSlot = 0,
 	     .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
 	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-	     .InstanceDataStepRate = 0}};
+	     .InstanceDataStepRate = 0},
+	    {.SemanticName = "TEXCOORD",
+        .SemanticIndex = 0,
+        .Format = DXGI_FORMAT_R32G32_FLOAT,
+        .InputSlot = 0,
+        .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
+        .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
+        .InstanceDataStepRate = 0}};
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineStateDesc{
 	    .pRootSignature = rootSignature.Get(),
@@ -557,4 +571,28 @@ void DirectX3DHelper::loadAssets() {
 DirectX3DHelper::~DirectX3DHelper() {
 	waitForPreviousFrame();
 	CloseHandle(fenceEvent);
+}
+
+void DirectX3DHelper::loadBitmapFromFile(PCWSTR uri, UINT & width, UINT & height, BYTE ** ppBits) {
+	ComPtr<IWICBitmapDecoder> pDecoder{};
+	ComPtr<IWICBitmapFrameDecode> pSource{};
+	ComPtr<IWICFormatConverter> pConverter{};
+
+	ThrowIfFailed(WICFactory->CreateDecoderFromFilename(
+	    uri, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnLoad,
+	    &pDecoder
+	));
+	ThrowIfFailed(pDecoder->GetFrame(0, &pSource));
+	ThrowIfFailed(WICFactory->CreateFormatConverter(&pConverter));
+	ThrowIfFailed(pConverter->Initialize(
+		    pSource.Get(),
+		    GUID_WICPixelFormat32bppRGBA,
+		    WICBitmapDitherTypeNone,
+		    nullptr,
+		    0.0f,
+		    WICBitmapPaletteTypeMedianCut
+		));
+	ThrowIfFailed(pConverter->GetSize(&width, &height));
+	*ppBits = new BYTE[4 * width * height];
+	ThrowIfFailed(pConverter->CopyPixels(nullptr, 4 * width, 4 * width * height, *ppBits));
 }
