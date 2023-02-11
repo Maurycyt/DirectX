@@ -12,7 +12,6 @@ namespace {
 	struct vertex_t {
 		FLOAT position[3];
 		FLOAT normal[3];
-		FLOAT color[4];
 		FLOAT tex_coord[2];
 	};
 
@@ -20,40 +19,40 @@ namespace {
 
 	vertex_t triangleVertices[24] = {
 	    // Front 1, blue
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
-	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,1.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0,-1.0, 0.0,0.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,0.0,
 
-	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
-	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0,-1.0, 1.0,0.0,
+	     0.5,-1.0,-0.3, 0.0,0.0,-1.0, 1.0,1.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0,-1.0, 0.0,1.0,
 
 	    // Back 1, orange
-	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
+	    -1.0, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 0.0,0.0,
 
-	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
-	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
-	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
+	     0.5,-1.0,-0.3, 0.0,0.0, 1.0, 0.0,1.0,
+	     0.5, 0.5,-0.3, 0.0,0.0, 1.0, 0.0,0.0,
+	    -1.0,-1.0,-0.3, 0.0,0.0, 1.0, 1.0,1.0,
 
 	    // Front 2, green
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
-	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,
+	     1.0,-0.5, 0.3, 0.0,0.0, 1.0, 0.0,1.0,
 
-	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
-	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0, 1.0, 1.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0, 1.0, 0.0,0.0,
+	    -0.5, 1.0, 0.3, 0.0,0.0, 1.0, 1.0,0.0,
 
 	    // Back 2, red
-	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,1.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
+	     1.0,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 0.0,1.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,
 
-	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,0.0,
-	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 1.0,0.0,
-	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 1.0,1.0,1.0,1.0, 0.0,1.0
+	    -0.5, 1.0, 0.3, 0.0,0.0,-1.0, 0.0,0.0,
+	     1.0, 1.0, 0.3, 0.0,0.0,-1.0, 1.0,0.0,
+	    -0.5,-0.5, 0.3, 0.0,0.0,-1.0, 0.0,1.0
 	};
 
 	size_t const VERTEX_BUFFER_SIZE = sizeof(triangleVertices);
@@ -70,10 +69,9 @@ namespace {
 		XMFLOAT4X4 matWorldViewProj;
 		XMFLOAT4X4 matWorldView;
 		XMFLOAT4X4 matView;
-		XMFLOAT4 colMaterial;
 		XMFLOAT4 colLight;
 		XMFLOAT4 dirLight;
-		XMFLOAT4 padding;
+		XMFLOAT4 padding [2];
 	};
 
 	vs_const_buffer_t vsConstBuffer;
@@ -234,7 +232,6 @@ void DirectX3DHelper::setWVPMatrix(const POINT cursorPos) {
 	XMStoreFloat4x4(&vsConstBuffer.matWorldViewProj, XMMatrixTranspose(wvpMatrix));
 	XMStoreFloat4x4(&vsConstBuffer.matWorldView, XMMatrixTranspose(wvMatrix));
 	XMStoreFloat4x4(&vsConstBuffer.matView, XMMatrixTranspose(vMatrix));
-	vsConstBuffer.colMaterial = {1.0, 0.4, 1.0, 1.0}; // pink leaves
 	vsConstBuffer.colLight = {1.0, 1.0, 1.0, 1.0};    // white light
 	vsConstBuffer.dirLight = {-sinf(position.lon), 0.0, cosf(position.lon), 0.0};
 	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
@@ -400,13 +397,6 @@ void DirectX3DHelper::loadAssets() {
 	    {.SemanticName = "NORMAL",
 	     .SemanticIndex = 0,
 	     .Format = DXGI_FORMAT_R32G32B32_FLOAT,
-	     .InputSlot = 0,
-	     .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
-	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-	     .InstanceDataStepRate = 0},
-	    {.SemanticName = "COLOR",
-	     .SemanticIndex = 0,
-	     .Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
 	     .InputSlot = 0,
 	     .AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT,
 	     .InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
@@ -804,4 +794,7 @@ void DirectX3DHelper::loadBitmapFromFile(PCWSTR uri, UINT & width, UINT & height
 	ThrowIfFailed(pConverter->GetSize(&width, &height));
 	*ppBits = new BYTE[4 * width * height];
 	ThrowIfFailed(pConverter->CopyPixels(nullptr, 4 * width, 4 * width * height, *ppBits));
+}
+
+void DirectX3DHelper::parseObjectFile(PCWSTR uri) {
 }

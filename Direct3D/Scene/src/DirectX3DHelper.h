@@ -66,6 +66,8 @@ class DirectX3DHelper {
 	void setWVPMatrix(POINT cursorPos);
 
 	void loadBitmapFromFile(PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits);
+
+	void parseObjectFile(PCWSTR uri);
 public:
 
 	DirectX3DHelper();
