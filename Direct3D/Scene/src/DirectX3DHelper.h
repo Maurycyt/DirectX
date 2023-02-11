@@ -8,6 +8,15 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct Position{
+	float x, y, z, lon, lat;
+};
+
+inline void ThrowIfFailed(HRESULT hr) {
+	if (FAILED(hr))
+		throw std::exception(std::to_string(hr).data());
+}
+
 class DirectX3DHelper {
 	HWND hwnd{};
 
@@ -42,10 +51,7 @@ class DirectX3DHelper {
 	HANDLE fenceEvent{};
 	UINT64 fenceValue{};
 
-	static inline void ThrowIfFailed(HRESULT hr) {
-		if (FAILED(hr))
-			throw std::exception(std::to_string(hr).data());
-	}
+	bool active{};
 
 	void loadPipeline();
 
@@ -55,7 +61,9 @@ class DirectX3DHelper {
 
 	void populateCommandList();
 
-	void setWVPMatrix();
+	[[nodiscard]] Position getPosition(POINT cursorPos) const;
+
+	void setWVPMatrix(POINT cursorPos);
 
 	void loadBitmapFromFile(PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits);
 public:
@@ -66,5 +74,10 @@ public:
 
 	~DirectX3DHelper();
 
-	void draw();
+	void draw(POINT cursorPos);
+
+	// Focus management
+	void activate();
+
+	void deactivate();
 };

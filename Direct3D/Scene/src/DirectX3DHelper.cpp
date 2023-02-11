@@ -188,13 +188,47 @@ void DirectX3DHelper::populateCommandList() {
 	ThrowIfFailed(commandList->Close());
 }
 
-void DirectX3DHelper::setWVPMatrix() {
-	static float angle = .0f;
-	angle += 1.f / 64;
+Position DirectX3DHelper::getPosition(const POINT cursorPos) const {
+	static const float pi = std::numbers::pi_v<float>;
+	static const float speed = 0.05f;
+	static Position position = {.x = 0.0, .y = 0.0, .z = -4.0, .lon = 0.0, .lat = 0.0};
 
-	XMMATRIX wMatrix = XMMatrixRotationY(angle);
-	XMMATRIX vMatrix = XMMatrixTranslation(0.0f, 0.0f, 4.0f);
-	XMMATRIX pMatrix = XMMatrixPerspectiveFovLH(45.0f, viewport.Width / viewport.Height, 1.0f, 100.0f);
+	position.lon -= (float(cursorPos.x) - float(scissorRect.right) / 2) * 2 * pi / 2000; // One rotation per 2000 px
+	position.lat -= (float(cursorPos.y) - float(scissorRect.bottom) / 2) * pi / 2 / 500; // From horizontal to vertical in 500 px
+	position.lat = min(pi / 2, max(-pi / 2, position.lat)); // Keep in bounds
+	
+	if (GetAsyncKeyState('W')) {
+		position.z += speed * cosf(position.lon);
+		position.x -= speed * sinf(position.lon);
+	}
+	if (GetAsyncKeyState('S')) {
+		position.z -= speed * cosf(position.lon);
+		position.x += speed * sinf(position.lon);
+	}
+	if (GetAsyncKeyState('A')) {
+		position.z -= speed * sinf(position.lon);
+		position.x -= speed * cosf(position.lon);
+	}
+	if (GetAsyncKeyState('D')) {
+		position.z += speed * sinf(position.lon);
+		position.x += speed * cosf(position.lon);
+	}
+
+	SetCursorPos(scissorRect.right / 2, scissorRect.bottom / 2);
+
+	return position;
+}
+
+void DirectX3DHelper::setWVPMatrix(const POINT cursorPos) {
+	Position position = getPosition(cursorPos);
+
+	XMMATRIX wMatrix = XMMatrixIdentity(); //XMMatrixRotationY(angle);
+	XMMATRIX vMatrix = XMMatrixMultiply(
+	    XMMatrixTranslation(-position.x, -position.y, -position.z),
+	    XMMatrixMultiply(
+	        XMMatrixRotationY(position.lon),
+	        XMMatrixRotationX(position.lat)));
+	XMMATRIX pMatrix = XMMatrixPerspectiveFovLH(45.0f, viewport.Width / viewport.Height, 0.001f, 100.0f);
 	XMMATRIX wvMatrix = XMMatrixMultiply(wMatrix, vMatrix);
 	XMMATRIX wvpMatrix = XMMatrixMultiply(wvMatrix, pMatrix);
 	XMStoreFloat4x4(&vsConstBuffer.matWorldViewProj, XMMatrixTranspose(wvpMatrix));
@@ -202,13 +236,17 @@ void DirectX3DHelper::setWVPMatrix() {
 	XMStoreFloat4x4(&vsConstBuffer.matView, XMMatrixTranspose(vMatrix));
 	vsConstBuffer.colMaterial = {1.0, 0.4, 1.0, 1.0}; // pink leaves
 	vsConstBuffer.colLight = {1.0, 1.0, 1.0, 1.0};    // white light
-	vsConstBuffer.dirLight = {0.0, 0.0, 1.0, 0.0};
+	vsConstBuffer.dirLight = {-sinf(position.lon), 0.0, cosf(position.lon), 0.0};
 	memcpy(pcBufferDataBegin, &vsConstBuffer, CONSTANT_BUFFER_SIZE);
 }
 
-void DirectX3DHelper::draw() {
+void DirectX3DHelper::draw(const POINT cursorPos) {
+	if (!active) {
+		return;
+	}
+
 	populateCommandList();
-	setWVPMatrix();
+	setWVPMatrix(cursorPos);
 
 	ID3D12CommandList * ppCommandLists[] = {commandList.Get()};
 	commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
@@ -734,6 +772,14 @@ void DirectX3DHelper::loadAssets() {
 	}
 
 	waitForPreviousFrame();
+}
+
+void DirectX3DHelper::activate() {
+	active = true;
+}
+
+void DirectX3DHelper::deactivate() {
+	active = false;
 }
 
 DirectX3DHelper::~DirectX3DHelper() {
