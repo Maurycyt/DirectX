@@ -20,24 +20,29 @@ inline void ThrowIfFailed(HRESULT hr) {
 class DirectX3DHelper {
 	HWND hwnd{};
 
+	static const unsigned int frameCount = 2;
+	unsigned int frameIndex{};
 	D3D12_RECT clientRect{};
 
-	static const unsigned int frameCount = 2;
-	ComPtr<ID3D12Device> device{};
-	ComPtr<IDXGIFactory7> factory{};
-	ComPtr<IWICImagingFactory> WICFactory{};
-	ComPtr<ID3D12CommandQueue> commandQueue{};
-	ComPtr<IDXGISwapChain3> swapChain{};
-	unsigned int frameIndex{};
-	ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap{};
-	unsigned int rtvDescriptorSize{};
-	ComPtr<ID3D12Resource> renderTargets[frameCount]{};
-	ComPtr<ID3D12CommandAllocator> commandAllocator{};
 	D3D12_VIEWPORT viewport{};
 	D3D12_RECT scissorRect{};
+	ComPtr<IDXGISwapChain3> swapChain{};
+	ComPtr<ID3D12Device> device{};
+	ComPtr<ID3D12Resource> renderTargets[frameCount]{};
+	ComPtr<ID3D12CommandAllocator> commandAllocator{};
+	ComPtr<ID3D12CommandQueue> commandQueue{};
 	ComPtr<ID3D12RootSignature> rootSignature{};
+
+	ComPtr<ID3D12DescriptorHeap> rtvDescriptorHeap{};
+	ComPtr<ID3D12DescriptorHeap> cbvDescriptorHeap{};
+	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap{};
+	unsigned int rtvDescriptorSize{};
+
 	ComPtr<ID3D12PipelineState> pipelineState{};
 	ComPtr<ID3D12GraphicsCommandList> commandList{};
+
+	ComPtr<IWICImagingFactory> WICFactory{};
+
 	ComPtr<ID3D12Resource> vertexBuffer{};
 	D3D12_VERTEX_BUFFER_VIEW vertexBufferView{};
 	ComPtr<ID3D12Resource> constantBuffer{};
@@ -45,8 +50,7 @@ class DirectX3DHelper {
 	ComPtr<ID3D12Resource> textureBuffer{};
 	ComPtr<ID3D12Resource> textureUploadBuffer{};
 	ComPtr<ID3D12Resource> depthBuffer{};
-	ComPtr<ID3D12DescriptorHeap> cbvDescriptorHeap{};
-	ComPtr<ID3D12DescriptorHeap> dsvDescriptorHeap{};
+
 	ComPtr<ID3D12Fence> fence{};
 	HANDLE fenceEvent{};
 	UINT64 fenceValue{};

@@ -234,6 +234,7 @@ void DirectX3DHelper::loadPipeline() {
 	dxgi_factory_flag |= DXGI_CREATE_FACTORY_DEBUG;
 
 	// Factory and device
+	ComPtr<IDXGIFactory7> factory{};
 	ThrowIfFailed(CreateDXGIFactory2(dxgi_factory_flag, IID_PPV_ARGS(&factory)));
 	ThrowIfFailed(D3D12CreateDevice(nullptr, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&device)));
 
@@ -485,7 +486,7 @@ void DirectX3DHelper::loadAssets() {
 
 	vertexBufferView = {
 	    .BufferLocation = vertexBuffer->GetGPUVirtualAddress(),
-	    .SizeInBytes = VERTEX_BUFFER_SIZE,
+	    .SizeInBytes = UINT(VERTEX_BUFFER_SIZE),
 	    .StrideInBytes = VERTEX_SIZE,
 	};
 
