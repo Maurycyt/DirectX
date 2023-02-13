@@ -67,7 +67,7 @@ class DirectX3DHelper {
 
 	void loadBitmapFromFile(PCWSTR uri, UINT &width, UINT &height, BYTE **ppBits);
 
-	void parseObjectFile(PCWSTR uri);
+	static void parseObjectFile(PCWSTR uri);
 public:
 
 	DirectX3DHelper();

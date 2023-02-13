@@ -88,6 +88,12 @@ namespace {
 				SetCursor(nullptr);
 				return 0;
 
+			case WM_KEYDOWN:
+				if (wParam == VK_ESCAPE) {
+					DestroyWindow(hwnd);
+				}
+				return 0;
+
 			case WM_ACTIVATE:
 				if (wParam == WA_INACTIVE) {
 					d3DHelper.deactivate();

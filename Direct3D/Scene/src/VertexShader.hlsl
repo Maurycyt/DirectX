@@ -22,7 +22,7 @@ vs_output_t main(
 	float4 LW = mul(dirLight, matView);
 	result.position = mul(float4(pos, 1.0f), matWorldViewProj);
 	result.color = mul(
- 			max(-dot(normalize(LW), normalize(NW)), 0.0f),
+ 			max(-dot(normalize(LW), normalize(NW)), 0.0f) / 2 + 0.5f,
  			colLight);
     result.tex = tex;
 	return result;
